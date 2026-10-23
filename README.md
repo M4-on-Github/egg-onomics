@@ -94,6 +94,38 @@ across stages. Outputs go to `results/gradient_descent/`; the R analysis stays
 separate. This notebook is an additional experiment, outside the nine-model R
 comparison.
 
+## Neural network notebook
+
+Open `analysis/neural_network.ipynb` with a Python 3 kernel. It implements
+12 log-price lag inputs, two hidden layers with 30 neurons and ReLU activations
+each, and 16 softmax output probabilities for fixed half-dollar price ranges
+from $0 to $8. The probability-weighted range centers give a dollar point
+forecast, bounded by $0.25 and $7.75. It learns with Adam and cross-entropy.
+
+The notebook contains executed results, training curves, three-month forecast
+comparisons, and softmax probability plots. Its dates match the R experiment;
+training examples and feature scaling use only history available at each origin.
+The model recursively feeds its point forecasts into subsequent steps. Outputs,
+weights and settings are in `results/neural_network/`; dependencies are listed
+in `analysis/requirements-neural-network.txt`. This is a separate experiment
+from the earlier log-trend regression and the nine-model R comparison.
+
+## Direct three month neural forecasts
+
+Open `analysis/direct_neural_network.ipynb` for the regression experiment with
+12 monthly log changes as inputs, two 30-neuron ReLU layers, 10% dropout, and
+three linear outputs. The outputs are cumulative log changes from the current
+price. An exponential decoder converts them to positive dollar forecasts, and
+training minimizes dollar MSE. All three months are predicted directly.
+
+Eight combinations of training duration and weight decay are compared over
+12 rolling origins whose targets end by October 2024. The best settings are
+locked before the usual validation and test periods are scored. This provides
+a comparison with the earlier softmax classifier and naive baseline. Results,
+selection details, rolling predictions and weights are saved separately under
+`results/direct_neural_network/`. Dependencies are the same as for the softmax
+notebook. The previously inspected test remains an exploratory comparison.
+
 ## Archived work
 
 The former project layout was moved intact to `junk/previous-work/`, including

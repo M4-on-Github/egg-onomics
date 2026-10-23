@@ -1,0 +1,25 @@
+Python 3.14.7
+NumPy 2.5.4
+Matplotlib 3.11.2
+PyTorch 2.14.1+cpu
+Source MD5 bf246189cbf9d52a5da338e57f838d30
+{
+  "selected_weight_decay": 0.01,
+  "selected_epochs": 300,
+  "selected_cv_rmse": 0.5982951542927097,
+  "naive_cv_rmse": 0.5990122656878109,
+  "cv_last_target": "2024-10",
+  "seed": 42,
+  "learning_rate": 0.003,
+  "dropout": 0.1,
+  "lags": 12,
+  "architecture": [
+    12,
+    30,
+    30,
+    3
+  ],
+  "parameters": 1413,
+  "loss": "dollar MSE after price-anchored exponential decoder",
+  "source_md5": "bf246189cbf9d52a5da338e57f838d30"
+}

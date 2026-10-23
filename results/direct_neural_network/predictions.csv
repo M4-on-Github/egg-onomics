@@ -1,0 +1,19 @@
+stage,model,horizon,date,forecast,actual
+Validation,Direct ReLU regression,1,2024-11,3.2826745957136154,3.649
+Validation,Direct ReLU regression,2,2024-12,3.193761131763458,4.146
+Validation,Direct ReLU regression,3,2025-01,3.1388654083013536,4.953
+Validation,Naive,1,2024-11,3.37,3.649
+Validation,Naive,2,2024-12,3.37,4.146
+Validation,Naive,3,2025-01,3.37,4.953
+Test,Direct ReLU regression,1,2025-02,5.119365753650666,5.897
+Test,Direct ReLU regression,2,2025-03,5.295126055598259,6.227
+Test,Direct ReLU regression,3,2025-04,5.430298673272133,5.122
+Test,Naive,1,2025-02,4.953,5.897
+Test,Naive,2,2025-03,4.953,6.227
+Test,Naive,3,2025-04,4.953,5.122
+Future,Direct ReLU regression,1,2025-05,4.933857687950134,
+Future,Direct ReLU regression,2,2025-06,4.767678602814675,
+Future,Direct ReLU regression,3,2025-07,4.681596711397171,
+Future,Naive,1,2025-05,5.122,
+Future,Naive,2,2025-06,5.122,
+Future,Naive,3,2025-07,5.122,

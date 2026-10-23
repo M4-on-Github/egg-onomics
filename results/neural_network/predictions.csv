@@ -1,0 +1,19 @@
+stage,model,date,forecast,actual
+Validation,ReLU softmax network,2024-11,2.8899292725402645,3.649
+Validation,ReLU softmax network,2024-12,2.7474532652681805,4.146
+Validation,ReLU softmax network,2025-01,2.743438265848473,4.953
+Validation,Naive,2024-11,3.37,3.649
+Validation,Naive,2024-12,3.37,4.146
+Validation,Naive,2025-01,3.37,4.953
+Test,ReLU softmax network,2025-02,4.06535776344284,5.897
+Test,ReLU softmax network,2025-03,3.712194405613581,6.227
+Test,ReLU softmax network,2025-04,3.7575237541356454,5.122
+Test,Naive,2025-02,4.953,5.897
+Test,Naive,2025-03,4.953,6.227
+Test,Naive,2025-04,4.953,5.122
+Future,ReLU softmax network,2025-05,3.757799967841181,
+Future,ReLU softmax network,2025-06,3.2337880271788046,
+Future,ReLU softmax network,2025-07,2.2624146634752114,
+Future,Naive,2025-05,5.122,
+Future,Naive,2025-06,5.122,
+Future,Naive,2025-07,5.122,

@@ -1,0 +1,9 @@
+Python 3.14.7
+NumPy 2.5.4
+Matplotlib 3.11.2
+PyTorch 2.14.1+cpu
+Source MD5 bf246189cbf9d52a5da338e57f838d30
+Seed 42; epochs 800; Adam lr 0.003
+Weight decay 0.0001; architecture 12-30-30-16
+Two ReLU hidden layers; softmax price-range output.
+16 fixed half-dollar ranges from $0 to $8; point forecasts bounded by centers.
