@@ -1,0 +1,164 @@
+Warning message:
+package 'forecast' was built under R version 4.5.3 
+Team window: Validation 
+Team window: Test 
+Rolling origins: 41 | workers: 8 
+Rolling fits took 4.8 min
+
+=== A) Team windows (3 observations each) ===
+      split                 model transform n    ME   MAE  RMSE  MAPE
+       Test                   SES       log 3 0.797 0.797 0.925 13.28
+       Test                   SES       raw 3 0.796 0.796 0.921 13.26
+       Test                  Holt       log 3 0.769 0.769 0.906 12.76
+       Test                  Holt       raw 3 0.405 0.683 0.711 11.67
+       Test           Damped Holt       log 3 0.764 0.764 0.901 12.68
+       Test           Damped Holt       raw 3 0.501 0.663 0.731 11.16
+       Test          Holt-Winters       log 3 1.074 1.074 1.174 18.13
+       Test          Holt-Winters       raw 3 0.919 0.919 1.045 15.37
+       Test              Auto ETS       log 3 1.048 1.048 1.138 17.72
+       Test              Auto ETS       raw 3 0.501 0.663 0.731 11.16
+       Test                 Naive       log 3 0.796 0.796 0.921 13.26
+       Test                 Naive       raw 3 0.796 0.796 0.921 13.26
+       Test        Seasonal naive       log 3 2.798 2.798 2.827 48.41
+       Test        Seasonal naive       raw 3 2.798 2.798 2.827 48.41
+       Test                 ARIMA       log 3 0.771 0.771 0.903 12.82
+       Test                 ARIMA       raw 3 0.642 0.646 0.796 10.63
+       Test Seasonal ARIMA search       log 3 0.901 0.901 0.995 15.17
+       Test Seasonal ARIMA search       raw 3 0.785 0.785 0.906 13.09
+ Validation                   SES       log 3 0.849 0.849 1.002 18.74
+ Validation                   SES       raw 3 0.879 0.879 1.030 19.44
+ Validation                  Holt       log 3 0.832 0.832 0.984 18.36
+ Validation                  Holt       raw 3 0.868 0.868 1.019 19.19
+ Validation           Damped Holt       log 3 0.755 0.755 0.912 16.54
+ Validation           Damped Holt       raw 3 0.860 0.860 1.011 19.00
+ Validation          Holt-Winters       log 3 0.357 0.357 0.520  7.47
+ Validation          Holt-Winters       raw 3 0.753 0.753 0.901 16.57
+ Validation              Auto ETS       log 3 0.605 0.605 0.752 13.19
+ Validation              Auto ETS       raw 3 0.776 0.776 0.921 17.10
+ Validation                 Naive       log 3 0.879 0.879 1.031 19.44
+ Validation                 Naive       raw 3 0.879 0.879 1.031 19.44
+ Validation        Seasonal naive       log 3 1.860 1.860 1.904 43.34
+ Validation        Seasonal naive       raw 3 1.860 1.860 1.904 43.34
+ Validation                 ARIMA       log 3 0.863 0.863 1.013 19.07
+ Validation                 ARIMA       raw 3 0.956 0.956 1.133 21.07
+ Validation Seasonal ARIMA search       log 3 0.585 0.585 0.729 12.70
+ Validation Seasonal ARIMA search       raw 3 0.792 0.792 0.941 17.44
+ Coverage80 Coverage95
+       0.33       0.33
+       0.33       0.33
+       0.33       0.33
+       0.00       0.33
+       0.33       0.33
+       0.33       0.33
+       0.33       0.33
+       0.33       0.33
+       0.33       0.33
+       0.33       0.33
+       0.33       0.33
+       0.33       0.33
+       0.00       0.00
+       0.00       0.00
+       0.33       0.33
+       0.33       0.33
+       0.33       0.33
+       0.33       0.33
+       0.33       0.33
+       0.00       0.00
+       0.33       0.33
+       0.00       0.00
+       0.33       0.67
+       0.00       0.00
+       0.67       1.00
+       0.00       0.33
+       0.67       0.67
+       0.00       0.00
+       0.00       0.00
+       0.00       0.00
+       0.00       0.00
+       0.00       0.00
+       0.33       0.33
+       0.00       0.00
+       0.33       0.67
+       0.00       0.33
+
+=== B) Rolling origins, all (41 origins) ===
+                 model transform   n    ME   MAE  RMSE  MAPE Coverage80
+                   SES       log 123 0.039 0.275 0.429 11.27       0.62
+                   SES       raw 123 0.044 0.276 0.431 11.25       0.51
+                  Holt       log 123 0.032 0.277 0.431 11.45       0.62
+                  Holt       raw 123 0.022 0.281 0.453 11.46       0.50
+           Damped Holt       log 123 0.022 0.284 0.462 11.62       0.61
+           Damped Holt       raw 123 0.030 0.280 0.449 11.46       0.52
+          Holt-Winters       log 123 0.046 0.276 0.419 11.28       0.55
+          Holt-Winters       raw 123 0.038 0.281 0.443 11.36       0.44
+              Auto ETS       log 123 0.054 0.267 0.416 10.68       0.56
+              Auto ETS       raw 123 0.026 0.269 0.424 10.90       0.47
+                 Naive       log 123 0.044 0.273 0.429 11.16       0.52
+                 Naive       raw 123 0.044 0.273 0.429 11.16       0.52
+        Seasonal naive       log 123 0.200 0.699 0.986 29.19       0.43
+        Seasonal naive       raw 123 0.200 0.699 0.986 29.19       0.43
+                 ARIMA       log 123 0.038 0.276 0.434 11.25       0.61
+                 ARIMA       raw 123 0.034 0.287 0.459 11.79       0.51
+ Seasonal ARIMA search       log 123 0.025 0.284 0.463 11.46       0.60
+ Seasonal ARIMA search       raw 123 0.047 0.278 0.430 11.31       0.53
+ Coverage95
+       0.76
+       0.67
+       0.75
+       0.67
+       0.76
+       0.69
+       0.78
+       0.67
+       0.79
+       0.69
+       0.67
+       0.67
+       0.57
+       0.57
+       0.75
+       0.66
+       0.76
+       0.67
+
+=== B) Rolling origins from 2022 on ===
+                 model transform  n    ME   MAE  RMSE  MAPE Coverage80
+                   SES       log 39 0.170 0.523 0.692 15.69       0.46
+                   SES       raw 39 0.175 0.525 0.695 15.66       0.28
+                  Holt       log 39 0.157 0.524 0.693 15.85       0.46
+                  Holt       raw 39 0.110 0.543 0.739 16.35       0.26
+           Damped Holt       log 39 0.120 0.545 0.752 16.42       0.46
+           Damped Holt       raw 39 0.121 0.541 0.730 16.49       0.31
+          Holt-Winters       log 39 0.186 0.510 0.660 15.68       0.46
+          Holt-Winters       raw 39 0.170 0.548 0.722 16.47       0.26
+              Auto ETS       log 39 0.211 0.520 0.669 15.68       0.41
+              Auto ETS       raw 39 0.117 0.523 0.689 15.98       0.26
+                 Naive       log 39 0.169 0.519 0.691 15.49       0.28
+                 Naive       raw 39 0.169 0.519 0.691 15.49       0.28
+        Seasonal naive       log 39 0.726 1.360 1.566 40.81       0.15
+        Seasonal naive       raw 39 0.726 1.360 1.566 40.81       0.15
+                 ARIMA       log 39 0.152 0.530 0.704 15.88       0.44
+                 ARIMA       raw 39 0.146 0.544 0.744 16.43       0.33
+ Seasonal ARIMA search       log 39 0.116 0.546 0.757 16.32       0.44
+ Seasonal ARIMA search       raw 39 0.171 0.531 0.694 16.04       0.28
+ Coverage95
+       0.59
+       0.41
+       0.56
+       0.44
+       0.59
+       0.44
+       0.59
+       0.44
+       0.56
+       0.46
+       0.44
+       0.44
+       0.21
+       0.21
+       0.56
+       0.46
+       0.59
+       0.44
+null device 
+          1 
