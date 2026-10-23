@@ -186,8 +186,12 @@ run_forecast <- function() {
     lines(d$date[past], d$price[past], col = HISTORY_COLOR, lwd = 2)
     lines(c(d$date[origin], dates), c(d$price[origin], fc$mean), col = "#2563eb", lwd = 2.5)
     abline(v = d$date[origin], col = "#64748b", lty = 2)
-    if (length(actual_id)) lines(d$date[actual_id], d$price[actual_id], type = "o", pch = 16,
-      col = "#b45309", lwd = 2)
+    if (length(actual_id)) {
+      # Connect the last training observation to the first held-out observation.
+      observed_id <- c(origin, actual_id)
+      lines(d$date[observed_id], d$price[observed_id], col = "#b45309", lwd = 2)
+      points(d$date[actual_id], d$price[actual_id], pch = 16, col = "#b45309")
+    }
     legend("topleft", c("Observed history", "Forecast mean", "80% prediction interval", "95% prediction interval",
       if (length(actual_id)) "Held-out actual"),
       col = c(HISTORY_COLOR, "#2563eb", BAND_80, BAND_95, if (length(actual_id)) "#b45309"),
@@ -200,10 +204,17 @@ run_forecast <- function() {
     plot(c(d$date[past], dates), c(d$price[past], rep(NA_real_, H)), type = "l", col = HISTORY_COLOR,
       lwd = 2, ylim = limits, main = heading, xlab = "Month", ylab = "U.S. dollars per dozen")
     abline(v = d$date[origin], col = "#64748b", lty = 2)
-    for (method in ALL_METHODS) lines(dates, fcs[[method]]$mean, col = COLORS[method], lwd = 2,
-      type = "o", pch = 16, cex = .5)
-    if (length(actual_id)) lines(d$date[actual_id], d$price[actual_id], col = HISTORY_COLOR,
-      lwd = 2.5, type = "o", pch = 16)
+    for (method in ALL_METHODS) {
+      # Anchor forecasts at the last observed price; markers show forecast months only.
+      lines(c(d$date[origin], dates), c(d$price[origin], fcs[[method]]$mean),
+        col = COLORS[method], lwd = 2)
+      points(dates, fcs[[method]]$mean, col = COLORS[method], pch = 16, cex = .5)
+    }
+    if (length(actual_id)) {
+      observed_id <- c(origin, actual_id)
+      lines(d$date[observed_id], d$price[observed_id], col = HISTORY_COLOR, lwd = 2.5)
+      points(d$date[actual_id], d$price[actual_id], pch = 16, col = HISTORY_COLOR)
+    }
     legend("topleft", c("Observed", ALL_METHODS), col = c(HISTORY_COLOR, COLORS[ALL_METHODS]),
       lty = 1, lwd = 2, bty = "n", ncol = 2, cex = .7)
   }
