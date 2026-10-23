@@ -4,3 +4,8 @@
 .Rproj.user/
 junk/
 
+
+# tsfm (Python extension)
+.venv/
+__pycache__/
+tsfm/plots/
