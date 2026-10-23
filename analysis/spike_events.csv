@@ -1,0 +1,4 @@
+event,label,origin,forecast_months,reason,source_url
+hpai_2014_15,2014-15 HPAI outbreak,2014-11-01,12,US HPAI detections began in December 2014; freeze before that month.,https://www.ers.usda.gov/data-products/charts-of-note/79273
+hpai_2022,2022 H5N1 outbreak,2022-01-01,12,US commercial poultry H5N1 outbreak announced in February 2022; freeze before that month.,https://www.cdc.gov/bird-flu/situation-summary/current-bird-flu-situation-in-poultry.html
+hpai_late_2024,Late-2024 HPAI wave,2024-09-01,12,USDA dates this wave from mid-October 2024; earlier outbreaks and price increases remain in history.,https://www.ers.usda.gov/data-products/charts-of-note/112677

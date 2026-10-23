@@ -1,0 +1,13 @@
+{
+  "source_md5": "bf246189cbf9d52a5da338e57f838d30",
+  "n": 544,
+  "last_observation": "2025-04-01",
+  "folds": 6,
+  "selection": "Minimum RMSE across six disjoint pre-origin 12-month blocks",
+  "fitting_window": "All observed history from January 1980 through each origin",
+  "horizon_months": 12,
+  "causal_effect": false,
+  "missing_values_imputed": 0,
+  "models": ["SES", "Holt", "Damped Holt", "Holt-Winters", "Auto ETS", "Naive", "Seasonal naive", "ARIMA", "Seasonal ARIMA search"],
+  "forecast_package": "9.0.2"
+}

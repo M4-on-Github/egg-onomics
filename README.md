@@ -126,6 +126,38 @@ selection details, rolling predictions and weights are saved separately under
 `results/direct_neural_network/`. Dependencies are the same as for the softmax
 notebook. The previously inspected test remains an exploratory comparison.
 
+## Forecasts frozen before the spikes
+
+Run `Rscript analysis/spike_counterfactual.R`, then open
+`results/spike_counterfactual/index.html`. The executed Python notebook
+`analysis/spike_counterfactual.ipynb` explains the design and displays the results.
+It reads the R outputs; set `RECOMPUTE = True` in its first code cell to refit.
+It needs the existing R packages plus Python `matplotlib` and `ipykernel`.
+
+This separate experiment freezes a 12-month forecast at November 2014, January
+2022, and September 2024, before documented HPAI outbreak periods. At each
+origin, six disjoint earlier 12-month validation blocks choose among all nine R
+methods; neither fitting nor selection uses later prices. Each model is fitted
+to all available history from January 1980. Forecasts are not updated during the
+event. Both first-three-month accuracy and the longer observed departures are
+reported. Only seven of the final event's 12 months are observed in our snapshot;
+the other five actuals remain unavailable, without interpolation.
+
+The resulting baseline is a continuation of earlier patterns, **not an identified
+price path without HPAI**. Actual-minus-baseline gaps include other influences.
+In particular, September 2024 already contains previous outbreaks and price
+increases, so it is only a baseline before the later wave. The 2014–15 outbreak
+is labeled HPAI rather than implying every historical outbreak was H5N1.
+Event dates and primary-source links are in `analysis/spike_events.csv`.
+
+Outputs include 324 frozen forecasts with 80%/95% model prediction intervals,
+27 individual model plots, three selected-model comparisons and gap plots,
+pre-event validation predictions, all-model summaries, calendar leakage audits,
+saved fitted models, and sensitivity forecasts from one and three months earlier.
+The earlier-origin sensitivity reselects using the five fully available earlier
+validation blocks. These retrospective cases are exploratory; they are not
+independent causal estimates or evidence of a new forecasting accuracy gain.
+
 ## Archived work
 
 The former project layout was moved intact to `junk/previous-work/`, including
