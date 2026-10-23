@@ -1,4 +1,4 @@
-"split","start","end","observations"
-"Training",1980-01-01,2023-04-01,520
-"Validation",2023-05-01,2024-04-01,12
-"Test",2024-05-01,2025-04-01,12
+"split","start","end","calendar_months","observed_months"
+"Training",1980-01-01,2024-10-01,538,538
+"Validation",2024-11-01,2025-01-01,3,3
+"Test",2025-02-01,2025-04-01,3,3

@@ -1,0 +1,73 @@
+THREE-MONTH FORECAST EXPERIMENT: ALL NINE MODELS
+
+      split      start        end calendar_months observed_months
+   Training 1980-01-01 2024-10-01             538             538
+ Validation 2024-11-01 2025-01-01               3               3
+       Test 2025-02-01 2025-04-01               3               3
+
+VALIDATION ACCURACY
+                 model        ME       MAE      RMSE      MAPE     MASE
+          Holt-Winters 0.3567732 0.3567732 0.5203653  7.473301 1.484204
+ Seasonal ARIMA search 0.5846225 0.5846225 0.7290665 12.699844 2.432074
+              Auto ETS 0.6049683 0.6049683 0.7522529 13.188399 2.516714
+           Damped Holt 0.7547235 0.7547235 0.9115664 16.540225 3.139707
+                  Holt 0.8324329 0.8324329 0.9840035 18.357505 3.462984
+                   SES 0.8490857 0.8490857 1.0015723 18.736204 3.532261
+                 ARIMA 0.8631173 0.8631173 1.0132662 19.072925 3.590634
+                 Naive 0.8793333 0.8793333 1.0305186 19.441065 3.658093
+        Seasonal naive 1.8603333 1.8603333 1.9043112 43.340683 7.739128
+ Coverage80 Coverage95 observed_months horizon_months
+  0.6666667  1.0000000               3              3
+  0.3333333  0.6666667               3              3
+  0.6666667  0.6666667               3              3
+  0.3333333  0.6666667               3              3
+  0.3333333  0.3333333               3              3
+  0.3333333  0.3333333               3              3
+  0.3333333  0.3333333               3              3
+  0.0000000  0.0000000               3              3
+  0.0000000  0.0000000               3              3
+
+Selected by validation RMSE: Holt-Winters 
+
+TEST ACCURACY
+                 model        ME       MAE      RMSE     MAPE      MASE
+           Damped Holt 0.7641887 0.7641887 0.9013259 12.68208  3.062057
+                 ARIMA 0.7714682 0.7714682 0.9033369 12.82149  3.091225
+                  Holt 0.7689046 0.7689046 0.9057078 12.76362  3.080953
+                 Naive 0.7956667 0.7956667 0.9206471 13.25564  3.188187
+                   SES 0.7974845 0.7974845 0.9254474 13.27774  3.195471
+ Seasonal ARIMA search 0.9008045 0.9008045 0.9946095 15.16762  3.609468
+              Auto ETS 1.0484690 1.0484690 1.1382994 17.71678  4.201151
+          Holt-Winters 1.0744687 1.0744687 1.1739210 18.12583  4.305330
+        Seasonal naive 2.7980000 2.7980000 2.8272242 48.41001 11.211413
+ Coverage80 Coverage95 observed_months horizon_months
+  0.3333333  0.3333333               3              3
+  0.3333333  0.3333333               3              3
+  0.3333333  0.3333333               3              3
+  0.3333333  0.3333333               3              3
+  0.3333333  0.3333333               3              3
+  0.3333333  0.3333333               3              3
+  0.3333333  0.3333333               3              3
+  0.3333333  0.3333333               3              3
+  0.0000000  0.0000000               3              3
+
+THREE-MONTH FUTURE FORECAST MEANS
+                 model May_2025 Jun_2025 Jul_2025
+                   SES 5.152916 5.165298 5.177681
+                  Holt 5.176774 5.206391 5.236150
+           Damped Holt 5.152704 5.165213 5.177713
+          Holt-Winters 5.043750 4.972404 5.124180
+              Auto ETS 4.974084 4.879064 5.019754
+                 Naive 5.122000 5.122000 5.122000
+        Seasonal naive 2.699000 2.715000 3.080000
+                 ARIMA 5.134780 5.147561 5.160341
+ Seasonal ARIMA search 4.903012 4.756576 4.805831
+
+DATA QUALITY
+ observations first_date  last_date missing_months missing_prices
+          544 1980-01-01 2025-04-01              0              0
+ duplicate_dates imputed_values                       source_md5
+               0              0 bf246189cbf9d52a5da338e57f838d30
+
+Only three observations per evaluation window. Periods differ from earlier annual tests.
+Original complete snapshot only. No missing or imputed prices.

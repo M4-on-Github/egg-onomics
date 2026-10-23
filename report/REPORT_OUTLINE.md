@@ -1,0 +1,47 @@
+# Report writing guide
+
+Use the current `results/` folder. The previous annual report draft is archived
+in `junk/previous-work/report/`; its numerical comparisons are not the current
+three-month analysis.
+
+## Dataset
+
+- State the question: how accurately can historical monthly egg prices forecast
+  the next three months?
+- Cite BLS/FRED series APU0000708111. Units are nominal U.S. dollars per dozen.
+- Give the original January 1980-April 2025 date range and 544 complete observations.
+- Explain that the analysis uses observed data without filling or interpolation.
+- Interpret `figures/00_history.png`, `00_training_acf.png` and `00_training_stl.png`.
+  Distinguish persistent price levels, annual dependence and irregular shocks.
+
+## Forecasting Methods
+
+- Describe the training window through October 2024, validation in November
+  2024-January 2025, and testing in February-April 2025.
+- Explain at least two methods in detail and include the naive benchmarks.
+- Explain why smoothing and ARIMA use log prices and bias-adjusted means.
+- Use `model_structures.csv` and `model_parameters.csv` for actual estimates.
+- Explain that validation RMSE selects the method before test evaluation.
+
+## Comparison
+
+- Compare `validation_accuracy.csv` and `test_accuracy.csv`; keep validation and
+  test rankings separate.
+- Explain RMSE, MAE, MAPE and the direction of mean error in dollars per dozen.
+- Discuss remaining dependence and large residuals using
+  `residual_diagnostics.csv` and the individual residual figures.
+- Interpret the early-2025 shock and observed interval coverage.
+- Three test months provide limited evidence of performance in other periods.
+
+## Forecast
+
+- Present the May-July 2025 historical forecasts from
+  `forecast_means_by_model.csv` and the complete interval table in
+  `forecast_3_months_all_models.csv`.
+- Use the selected method's `future_*.png` figure, with its 80% and 95% prediction
+  intervals. Distinguish those intervals from confidence intervals for a mean.
+- Explain uncertainty, potential budgeting uses and what additional data could help.
+- Keep the three-month horizon distinct from the 12-month seasonal period.
+
+Write and review the report in your own words and apply the course requirements
+for permitted assistance and disclosure.
