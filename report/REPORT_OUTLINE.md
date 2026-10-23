@@ -45,3 +45,13 @@ three-month analysis.
 
 Write and review the report in your own words and apply the course requirements
 for permitted assistance and disclosure.
+
+## Appendix
+
+- Include the 36 graphs listed in `results/individual_plot_manifest.csv`, grouped
+  by method. For each of the nine methods, show validation, test, the May-July
+  2025 historical forecast and training residual diagnostics.
+- Forecast panels include 80% and 95% prediction intervals. Validation and test
+  panels also include held-out actual prices. Prediction lines connect to the
+  last observed price at their origin.
+- Residual panels use the original training window through October 2024.

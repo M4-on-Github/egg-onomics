@@ -108,7 +108,7 @@ run_forecast <- function() {
   test_models <- fit_stage(dev_n, paste("test origin", format(d$date[dev_n], "%B %Y")))
   test <- lapply(test_models, predict_one, h = H)
   test_scores <- accuracy(test, test_id, dev_n)
-  # Every method is refitted for its own October-December forecast, not just
+  # Every method is refitted for its own May-July forecast, not just
   # the validation winner. The winner remains a clearly separate statement.
   final_models <- fit_stage(n, paste("final origin", format(max(d$date), "%B %Y")))
   final <- lapply(final_models, predict_one, h = H)
@@ -181,8 +181,14 @@ run_forecast <- function() {
     limits <- range(d$price[c(past, actual_id)], fc$lower, fc$upper, na.rm = TRUE)
     plot(c(d$date[past], dates), c(d$price[past], rep(NA_real_, H)), type = "n", ylim = limits,
       xlab = "Month", ylab = "U.S. dollars per dozen", main = heading)
-    polygon(c(dates, rev(dates)), c(fc$lower[, "95%"], rev(fc$upper[, "95%"])), col = BAND_95, border = NA)
-    polygon(c(dates, rev(dates)), c(fc$lower[, "80%"], rev(fc$upper[, "80%"])), col = BAND_80, border = NA)
+    # The known origin has zero uncertainty; join each band to that anchor.
+    band_dates <- c(d$date[origin], dates)
+    for (level in c("95%", "80%")) {
+      lower <- c(d$price[origin], fc$lower[, level])
+      upper <- c(d$price[origin], fc$upper[, level])
+      polygon(c(band_dates, rev(band_dates)), c(lower, rev(upper)),
+        col = if (level == "95%") BAND_95 else BAND_80, border = NA)
+    }
     lines(d$date[past], d$price[past], col = HISTORY_COLOR, lwd = 2)
     lines(c(d$date[origin], dates), c(d$price[origin], fc$mean), col = "#2563eb", lwd = 2.5)
     abline(v = d$date[origin], col = "#64748b", lty = 2)
@@ -235,6 +241,8 @@ run_forecast <- function() {
     }
   })
   for (method in ALL_METHODS) {
+    figure(paste0("validation_", slug(method)), function() draw_one(validation[[method]], train_n,
+      paste(method, "validation:", date_label(d$date[val_id])), val_id))
     figure(paste0("test_", slug(method)), function() draw_one(test[[method]], dev_n,
       paste(method, "test:", date_label(d$date[test_id])), test_id))
     figure(paste0("future_", slug(method)), function() draw_one(final[[method]], n,
@@ -285,6 +293,16 @@ run_forecast <- function() {
       lag = 24L, fitdf = df, ljung_box_p = lb$p.value)
   }))
   save_csv(diagnostics, "residual_diagnostics")
+  # A manifest keeps the model appendix and exported images in the same order.
+  plot_stages <- c("validation", "test", "future", "residuals")
+  plot_labels <- c("Validation forecast", "Test forecast", "Historical future forecast",
+    "Training residual diagnostics")
+  individual_plots <- do.call(rbind, lapply(ALL_METHODS, function(method) {
+    data.frame(model = method, stage = plot_stages, description = plot_labels,
+      file = paste0("figures/", plot_stages, "_", slug(method), ".png"))
+  }))
+  stopifnot(all(file.exists(file.path(out, individual_plots$file))))
+  save_csv(individual_plots, "individual_plot_manifest")
   save_csv(data.frame(seasonal_strength = seasonal_strength,
     log_acf_lag1 = as.numeric(acf(log(training), lag.max = 12, plot = FALSE)$acf)[2],
     log_acf_lag12 = as.numeric(acf(log(training), lag.max = 12, plot = FALSE)$acf)[13]), "exploration_summary")

@@ -1,0 +1,6 @@
+Python 3.14.7
+NumPy 2.5.4
+Matplotlib 3.11.2
+Source MD5 bf246189cbf9d52a5da338e57f838d30
+Lookback 24; horizon 3; learning rate 0.05
+Unadjusted exp(log-trend) point forecasts; no prediction intervals.

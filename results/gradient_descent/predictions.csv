@@ -1,0 +1,19 @@
+stage,model,date,forecast,actual
+Validation,Gradient descent,2024-11,2.667482288564689,3.649
+Validation,Gradient descent,2024-12,2.64992335394222,4.146
+Validation,Gradient descent,2025-01,2.6324800025370774,4.953
+Validation,Naive,2024-11,3.37,3.649
+Validation,Naive,2024-12,3.37,4.146
+Validation,Naive,2025-01,3.37,4.953
+Test,Gradient descent,2025-02,3.571283148378399,5.897
+Test,Gradient descent,2025-03,3.631342666065646,6.227
+Test,Gradient descent,2025-04,3.6924122256663887,5.122
+Test,Naive,2025-02,4.953,5.897
+Test,Naive,2025-03,4.953,6.227
+Test,Naive,2025-04,4.953,5.122
+Future,Gradient descent,2025-05,5.272632265823127,
+Future,Gradient descent,2025-06,5.5057059874684615,
+Future,Gradient descent,2025-07,5.749082600911074,
+Future,Naive,2025-05,5.122,
+Future,Naive,2025-06,5.122,
+Future,Naive,2025-07,5.122,

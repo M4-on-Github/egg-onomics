@@ -74,6 +74,25 @@ forecasts from April 2025 should not be described as current forecasts.
 - `results/evaluation_predictions.csv`: all 54 validation and test predictions.
 - `results/model_structures.csv`, `model_parameters.csv` and `residual_diagnostics.csv`: model audit.
 - `results/figures/`: history, ACF, STL, residual checks and individual model forecasts.
+- `results/individual_plot_manifest.csv`: all 36 individual graphs, ordered by
+  method and stage for the report appendix. Each method has a validation plot,
+  test plot, historical future forecast and training residual diagnostic panel.
+
+## Gradient descent notebook
+
+Open `analysis/gradient_descent.ipynb` in Jupyter or VS Code with a Python 3
+kernel. It contains executed outputs, a NumPy implementation of gradient
+descent, its learning curve, and validation, test and historical future
+forecast plots. Python dependencies are listed in
+`analysis/requirements-gradient-descent.txt`.
+
+The model fits a log-price trend to the latest 24 months at each origin and
+compares against naive forecasts over the same three-month evaluation dates.
+Exponentiated predictions are unadjusted point forecasts, rather than the
+bias-adjusted means from the R smoothing and ARIMA models. Its settings are fixed
+across stages. Outputs go to `results/gradient_descent/`; the R analysis stays
+separate. This notebook is an additional experiment, outside the nine-model R
+comparison.
 
 ## Archived work
 

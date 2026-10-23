@@ -8,4 +8,5 @@ junk/
 # tsfm (Python extension)
 .venv/
 __pycache__/
+.ipynb_checkpoints/
 tsfm/plots/
