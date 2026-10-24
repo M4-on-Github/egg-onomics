@@ -24,9 +24,9 @@ from a December 2013 origin.
 
 1. **"About 10 time steps" in Task 5 means months, not years.** The data are
    monthly, so the 12-month forecast (Jan-Dec 2015) answers Task 5. The
-   180-month (15-year) forecast is an extra. The "10 years" figure is just how
+   144-month (12-year) forecast is an extra. The "10 years" figure is just how
    long the post-2014 actuals run: 124 months, Jan 2015-Apr 2025. The script
-   produces all three horizons (6, 12 and 180 months) and scores only the 124
+   produces all three horizons (6, 12 and 144 months) and scores only the 124
    months that have actual prices. Say in the report which forecast answers
    Task 5 and why the others exist.
 2. **The two models were picked after the team had seen 2014 results.** Earlier
@@ -55,12 +55,11 @@ from a December 2013 origin.
    Seasonal ARIMA (0.0714); Naive was selected at 0.0547, a near tie
    (`results/validation_accuracy.csv`). Its Jul-Dec 2014 test, refit through
    June 2014, had Seasonal ARIMA at 0.0697 (`results/test_accuracy.csv`).
-5. **The long-horizon 95% interval goes below $0.** The lowest bound over 180
-   months is -$0.316. The 95% lower bound first goes negative at horizon 146
-   (Feb 2027) and stays negative for 35 months, all in the unscored part. The
-   80% lower bound never goes negative. This happens because the model has
-   additive errors on the dollar scale (the log transform was removed on
-   purpose). Present it as a limitation, not as a forecast.
+5. **The long-horizon 95% interval gets very wide.** Over 144 months the
+   lowest 95% bound is $0.015, so it stays just above $0, but the width grows
+   from $0.27 at month 1 to $4.64 at month 144. Beyond Dec 2026 the bound would
+   go negative (additive errors on the dollar scale; the log transform was
+   removed on purpose). Present the width as a limitation.
 6. **Neither model has white-noise residuals.** The Ljung-Box test rejects at
    5% for both (section 2, Task 3). Seasonal ARIMA is much closer to white noise.
 7. **Damped Holt is effectively simple exponential smoothing here.** Beta sits on
@@ -92,8 +91,8 @@ from a December 2013 origin.
 | Scale | original dollars, no transform | - |
 | Choice rule | lower 2014 test RMSE; tie = RMSEs equal to $0.001, then lower MAE, then smaller absolute ME | `better_model.csv` |
 | Final fit | refit on Jan 1980-Dec 2014 (420 months); ARIMA order kept, coefficients re-estimated | `model_structures.csv` |
-| Forecasts | better model only: 6, 12 and 180 months (Jan 2015-Dec 2029) | `better_forecast_*_months.csv` |
-| Post-hoc check | 124 months with actuals (Jan 2015-Apr 2025); months 125-180 unscored | `gap_summary.csv` |
+| Forecasts | better model only: 6, 12 and 144 months (Jan 2015-Dec 2026) | `better_forecast_*_months.csv` |
+| Post-hoc check | 124 months with actuals (Jan 2015-Apr 2025); months 125-144 unscored | `gap_summary.csv` |
 | Leakage checks | 9 of 9 passed | `leakage_checks.csv` |
 
 Run it from the `revised-2014` folder with `Rscript analysis/final_two_models.R`
@@ -337,8 +336,8 @@ For **each** method the PDF wants:
     post-2014 actuals. Use this one for Task 5.
   - `better_forecast_6_months.csv` and `figures/09_..._clean.png`: the shorter
     view.
-  - `better_forecast_180_months.csv` and `figures/11_..._clean.png`: the
-    15-year extra.
+  - `better_forecast_144_months.csv` and `figures/11_..._clean.png`: the
+    12-year extra.
 - **Final model:** Seasonal ARIMA(1,1,0)(2,0,0)[12], refit on Jan 1980-Dec 2014.
   - Coefficients (`model_parameters.csv`, "Final fit"): ar1 -0.183, sar1 0.233,
     sar2 0.234, sigma 0.0689.
@@ -353,7 +352,7 @@ For **each** method the PDF wants:
   | Dec 2015 | $2.235 | 1.973 to 2.497 | 1.834 to 2.636 |
 
   The 12-month mean is $2.163. The width of the 95% interval is $0.27 at month
-  1, $0.80 at month 12, $4.23 at month 124 and $5.31 at month 180.
+  1, $0.80 at month 12, $4.23 at month 124 and $4.64 at month 144.
 - **Points worth making:**
   - The forecast is almost flat with a small seasonal shape: it rises to
     $2.189 in April, dips to $2.129 in July and rises again to $2.235 in
@@ -366,7 +365,7 @@ For **each** method the PDF wants:
     orange actual line are for the post-hoc check only and must say so.
 - **Honest limitations:**
   - There is no drift or inflation term. The long-run forecast settles at about
-    $2.34 in nominal dollars (the 180-month mean ranges from $2.13 to $2.34).
+    $2.34 in nominal dollars (the 144-month mean ranges from $2.13 to $2.34).
   - At long horizons the 95% lower bound is negative (section 0, item 5).
 
 ### Task 6: Report (word-processed, for a boss who knows forecasting)
@@ -388,7 +387,7 @@ For **each** method the PDF wants:
   | 6 months (Jan-Jun 2015) | -0.009 | 0.154 | 0.204 | 6.8% | 4/6 | 5/6 | 1/6 |
   | 12 months (2015) | +0.307 | 0.388 | 0.475 | 14.5% | 4/12 | 5/12 | 7/12 |
   | 124 months (Jan 2015-Apr 2025) | -0.104 | 0.773 | 0.974 | 37.7% | 68/124 | 93/124 | 40/124 |
-  | Months 125-180 (May 2025-Dec 2029) | unscored | | | | | | |
+  | Months 125-144 (May 2025-Dec 2026) | unscored | | | | | | |
 
   - Mean actual over 124 months: $2.188. Mean forecast: $2.293.
   - Actuals above the 95% band: 14 months (Jun-Dec 2015, Dec 2022-Feb 2023,
@@ -515,7 +514,7 @@ For **each** method the PDF wants:
 9. **Forecast.**
    - The final fit.
    - The 12-month forecast figure (clean version) and table.
-   - Which horizon answers Task 5, and why 6 and 180 months are also shown.
+   - Which horizon answers Task 5, and why 6 and 144 months are also shown.
 10. **Confidence and post-hoc check.**
     - Interval behaviour.
     - The gap tables and figures 11 and 12, with the correct framing.
@@ -541,7 +540,7 @@ The plan below adds up to about 6 minutes, which leaves room for questions.
 | 4 | The 2014 test | `07_test_comparison.png` | 0:50 |
 | 5 | Error measures and the choice | `08_accuracy_comparison.png` | 0:40 |
 | 6 | The 12-month forecast | `10_better_forecast_12_months_clean.png` | 0:50 |
-| 7 | How far to trust it | `12_gap_by_year.png` or `11_better_forecast_180_months.png` | 0:50 |
+| 7 | How far to trust it | `12_gap_by_year.png` or `11_better_forecast_144_months.png` | 0:50 |
 | 8 | Decisions and next data | none, or reuse figure 10 | 0:30 |
 
 Notes:
@@ -568,10 +567,10 @@ Notes:
 | What does MASE 0.379 mean? | test MAE is 38% of the in-sample seasonal-naive MAE |
 | Why is 2014 coverage 100%? | 12 calm months; with 80% intervals you would expect about 2 misses; intervals likely too narrow at high price levels (`residual_sd_by_decade.csv`) |
 | Why not use a log scale? | Team decision (README work log): all prices positive and between $0.68 and $2.21 before 2015, same scale for all models; cost: negative long-run lower bound and intervals that do not scale with the price level |
-| Why does the 15-year forecast go flat? | ARIMA with d = 1 and no drift; seasonal AR terms fade; mean settles near $2.34 |
-| Why does the interval go below $0? | additive dollar errors; 95% lower bound negative from Feb 2027 (horizon 146), minimum -$0.316 |
+| Why does the 12-year forecast go flat? | ARIMA with d = 1 and no drift; seasonal AR terms fade; mean settles near $2.34 |
+| Why does the interval go below $0? | additive dollar errors; the 95% interval is $4.64 wide at month 144 and would cross $0 just after Dec 2026 |
 | Is the gap the cost of bird flu? | No: forecast error of a pre-2015 model, signed both ways (`gap_by_year.csv`) |
-| Why stop at Dec 2014 when data run to 2025? | the team's design: the calmer pre-2015 regime is modelled, and later data give an honest check; months 125-180 unscored |
+| Why stop at Dec 2014 when data run to 2025? | the team's design: the calmer pre-2015 regime is modelled, and later data give an honest check; months 125-144 unscored |
 | How would you improve it? | outside predictors, rolling origins, a variance-stabilising scale, more recent training data; see Task 6 data list |
 
 ---
@@ -625,7 +624,7 @@ Notes:
 - [ ] The mixed result explained; the half-year flip and the sensitivity years mentioned.
 - [ ] Selection-informed test disclosed.
 - [ ] Better model and rule stated.
-- [ ] Task 5 forecast is the 12-month one, with the figure title, labelled axes, and 80% and 95% prediction intervals. The 180-month extra explained.
+- [ ] Task 5 forecast is the 12-month one, with the figure title, labelled axes, and 80% and 95% prediction intervals. The 144-month extra explained.
 - [ ] Confidence discussion includes interval width, the negative long-run bound and the post-hoc check, framed as forecast error rather than a causal effect.
 - [ ] Decisions and future data covered.
 - [ ] R code commented, runs from the `revised-2014` folder, and every member can explain it. AI-use disclosure agreed.

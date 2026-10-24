@@ -1,7 +1,7 @@
 # FINAL STUDY for the report: Damped Holt and Seasonal ARIMA on monthly egg prices.
 # Training Jan 1980-Dec 2013 (408 months). Test Jan-Dec 2014 (12 months). No validation set.
 # The model with the lower 2014 test RMSE is refitted through Dec 2014 and projected
-# 6, 12 and 180 months ahead (Jan 2015-Dec 2029). Actual prices after Dec 2014 are used
+# 6, 12 and 144 months ahead (Jan 2015-Dec 2026). Actual prices after Dec 2014 are used
 # ONLY in the post-hoc gap tables and plots, never for fitting or for choosing a model.
 # All models work on original dollar prices (no log transform).
 # Run from revised-2014/:  Rscript analysis/final_two_models.R   (or Source it in RStudio)
@@ -46,14 +46,13 @@ run_final_two_models <- function() {
   N_TEST <- 12L
   H_SHORT <- 6L
   H_YEAR <- 12L
-  H_LONG <- 180L                       # "15 years": Jan 2015-Dec 2029
+  H_LONG <- 144L                       # Jan 2015-Dec 2026
   MODELS <- c("Damped Holt", "Seasonal ARIMA")
   MODEL_COLORS <- c("Damped Holt" = "#0d9488", "Seasonal ARIMA" = "#7c3aed")
   MODEL_LTY <- c("Damped Holt" = 2, "Seasonal ARIMA" = 1)
   ACTUAL_COLOR <- "#c2410c"
   EXPECTED_ORDER <- "ARIMA(1,1,0)(2,0,0)[12]"   # what earlier runs found; checked below
   slug <- function(model) gsub(" ", "_", tolower(model))
-  month_label <- function(dates) paste(format(min(dates), "%b %Y"), "to", format(max(dates), "%b %Y"))
 
   # ---- Task 2: import and check the data ----------------------------------------
   raw <- read.csv(INPUT, stringsAsFactors = FALSE)
@@ -97,18 +96,11 @@ run_final_two_models <- function() {
   test_start <- as.Date("2014-01-01")
   posthoc_start <- as.Date("2015-01-01")
   figure("01_history_with_cuts", function() {
-    plot(full$date, full$price, type = "n", xlab = "Month", ylab = "U.S. dollars per dozen",
-      main = "U.S. average price of a dozen large Grade A eggs, Jan 1980-Apr 2025")
-    u <- par("usr")
-    rect(test_start, u[3], posthoc_start, u[4], col = "#ccfbf1", border = NA)
-    rect(posthoc_start, u[3], u[2], u[4], col = "#f1f5f9", border = NA)
+    plot(full$date, full$price, type = "n", xlab = "Month", ylab = "U.S. dollars per dozen")
     lines(full$date, full$price, col = HISTORY_COLOR, lwd = 2)
     abline(v = c(test_start, posthoc_start), col = c("#0f766e", "#dc2626"), lty = c(3, 4), lwd = 2)
-    legend("topleft", c("Observed monthly price", "Test year starts: Jan 2014",
-      "Post-hoc comparison only: Jan 2015 onward"), col = c(HISTORY_COLOR, "#0f766e", "#dc2626"),
+    legend("topleft", c("Observed price", "Jan 2014", "Jan 2015"), col = c(HISTORY_COLOR, "#0f766e", "#dc2626"),
       lty = c(1, 3, 4), lwd = 2, bty = "n", cex = .85)
-    mtext(paste("Training: Jan 1980-Dec 2013 (408 months) | Test: Jan-Dec 2014 (12)",
-      "| Jan 2015-Apr 2025 (124): never used for fitting or choosing"), side = 3, line = .35, cex = .8)
   })
   draw_pacf <- function(y, heading, max_lag = 48L, color = "#2563eb") {
     pacf(as.numeric(y), lag.max = max_lag, main = heading, xlab = "Lag in months",
@@ -117,10 +109,10 @@ run_final_two_models <- function() {
   train_change <- diff(train_y)
   figure("02_correlogram", function() {
     par(mfrow = c(2, 2), mar = c(4.5, 4.5, 3, 1))
-    draw_acf(train_y, "ACF of price, Jan 1980-Dec 2013", 48L)
+    draw_acf(train_y, "ACF of price", 48L)
     draw_pacf(train_y, "PACF of price")
-    draw_acf(train_change, "ACF of monthly price change", 48L, "#0f766e")
-    draw_pacf(train_change, "PACF of monthly price change", 48L, "#0f766e")
+    draw_acf(train_change, "ACF of price change", 48L, "#0f766e")
+    draw_pacf(train_change, "PACF of price change", 48L, "#0f766e")
   }, height = 1200L)
   stl_fit <- stl(train_y, s.window = "periodic", robust = TRUE)
   parts <- stl_fit$time.series
@@ -129,35 +121,32 @@ run_final_two_models <- function() {
   # A periodic seasonal is identical every year; training starts in January.
   seasonal_by_month <- setNames(as.numeric(parts[1:12, "seasonal"]), month.abb)
   figure("03_stl_decomposition", function() {
-    par(mfrow = c(4, 1), mar = c(2, 5, 2, 1), oma = c(3, 0, 2.5, 0))
+    par(mfrow = c(4, 1), mar = c(2, 5, 2, 1), oma = c(3, 0, 0, 0))
     plot(train_dates, as.numeric(train_y), type = "l", col = HISTORY_COLOR, lwd = 1.5,
       xlab = "", ylab = "Price ($/dozen)", main = "Observed price")
     plot(train_dates, as.numeric(parts[, "trend"]), type = "l", col = "#2563eb", lwd = 2,
       xlab = "", ylab = "Trend ($/dozen)", main = "Trend")
     plot(train_dates, as.numeric(parts[, "seasonal"]), type = "l", col = "#0f766e", lwd = 1.5,
-      xlab = "", ylab = "Seasonal ($/dozen)", main = "Seasonal component (same each year)")
+      xlab = "", ylab = "Seasonal ($/dozen)", main = "Seasonal")
     abline(h = 0, lty = 2, col = "#64748b")
     plot(train_dates, as.numeric(parts[, "remainder"]), type = "h", col = "#64748b",
       xlab = "", ylab = "Remainder ($/dozen)", main = "Remainder")
     abline(h = 0)
     mtext("Month", side = 1, outer = TRUE, line = 1.2, col = HISTORY_COLOR)
-    mtext("STL decomposition of training prices, Jan 1980-Dec 2013 (robust, periodic seasonal)",
-      side = 3, outer = TRUE, line = .8, font = 2, col = HISTORY_COLOR)
   }, height = 1500L)
   figure("04_seasonal_by_month", function() {
-    par(mfrow = c(1, 2), mar = c(4.5, 5, 4, 1))
+    par(mfrow = c(1, 2), mar = c(4.5, 5, 1, 1))
     # monthplot() mishandles col/main passed through `...`; set the line color with par()
     # and add the titles separately.
     par(col = HISTORY_COLOR)
     monthplot(train_y, labels = month.abb, ylab = "U.S. dollars per dozen",
       col.base = ACTUAL_COLOR, lwd.base = 2)
     par(col = "#334155")
-    title(main = "Price by calendar month, 1980-2013",
-      xlab = "Calendar month (thin lines: years; bar: mean)")
+    title(xlab = "Calendar month")
     bars <- barplot(100 * seasonal_by_month, names.arg = month.abb, border = NA, las = 2,
       col = ifelse(seasonal_by_month >= 0, BAND_80, "#fdba74"),
       ylim = 100 * range(seasonal_by_month) * 1.25, xlab = "Calendar month",
-      ylab = "Seasonal effect (cents per dozen)", main = "Average seasonal effect (STL)")
+      ylab = "Seasonal effect (cents per dozen)")
     abline(h = 0, col = "#334155")
     text(bars, 100 * seasonal_by_month, sprintf("%.1f", 100 * seasonal_by_month),
       pos = ifelse(seasonal_by_month >= 0, 3, 1), cex = .7)
@@ -329,16 +318,12 @@ run_final_two_models <- function() {
       hist(r, breaks = "FD", freq = FALSE, col = "#bfdbfe", border = "white",
         main = "Residual histogram", xlab = "Residual ($/dozen)", ylab = "Density")
       curve(dnorm(x, mean(r), sd(r)), add = TRUE, col = ACTUAL_COLOR, lwd = 2)
-      legend("topright", "Normal curve, same mean and sd", col = ACTUAL_COLOR, lwd = 2, bty = "n", cex = .75)
+      legend("topright", "Normal density", col = ACTUAL_COLOR, lwd = 2, bty = "n", cex = .75)
       draw_acf(r, "Residual ACF", 36L, MODEL_COLORS[m])
       qqnorm(r, col = MODEL_COLORS[m], pch = 16, cex = .6, main = "Normal Q-Q plot",
         xlab = "Theoretical normal quantile", ylab = "Residual quantile ($/dozen)")
       qqline(r, col = ACTUAL_COLOR, lwd = 2)
-      # A p-value that rounds to 0 is shown as "< 0.0001" rather than "= 0".
-      p_text <- if (lb24$p.value < 1e-4) "< 0.0001" else sprintf("= %.2g", lb24$p.value)
-      mtext(sprintf("%s (%s): training residuals, Jan 1980-Dec 2013 | lag-12 ACF %.2f | Ljung-Box lag 24 p %s",
-        m, describe_fit(fit), r_acf[13], p_text), side = 3, outer = TRUE, line = .8, font = 2,
-        col = HISTORY_COLOR)
+      mtext(m, side = 3, outer = TRUE, line = .8, font = 2, col = HISTORY_COLOR)
     }, height = 1200L)
     data.frame(model = m, structure = describe_fit(fit), months = length(r), mean = mean(r),
       sd = sd(r), skewness = mean(z^3), excess_kurtosis = mean(z^4) - 3,
@@ -355,8 +340,8 @@ run_final_two_models <- function() {
   # ---- Task 3: test-forecast plots, one per model --------------------------------------
   # Fan chart: history, forecast mean, 80%/95% bands joined to the last observed month,
   # and optional actuals drawn after the forecast origin.
-  draw_fan <- function(fc, origin_n, h, color, heading, subheading, history_from,
-                       actual = NULL, actual_label = "", unscored_from = NULL) {
+  draw_fan <- function(fc, origin_n, h, color, label, history_from,
+                       actual = NULL, unscored_from = NULL) {
     dates <- seq(model_data$date[origin_n], by = "month", length.out = h + 1L)[-1L]
     past <- which(model_data$date >= as.Date(history_from) & seq_len(nrow(model_data)) <= origin_n)
     mean_h <- as.numeric(fc$mean)[seq_len(h)]
@@ -369,12 +354,10 @@ run_final_two_models <- function() {
     y_range <- range(model_data$price[past], lo95, hi95, actual$price)
     y_range[2] <- y_range[2] + .12 * diff(y_range)   # room for the legend
     plot(range(model_data$date[past], dates), y_range, type = "n", xlab = "Month",
-      ylab = "U.S. dollars per dozen", main = heading)
+      ylab = "U.S. dollars per dozen")
     if (!is.null(unscored_from)) {
       u <- par("usr")
       rect(unscored_from, u[3], u[2], u[4], col = "#f1f5f9", border = NA)
-      text(unscored_from, u[4] - .07 * diff(u[3:4]), "No actuals:\nunscored extrapolation",
-        pos = 4, cex = .75, col = "#475569")
     }
     band_dates <- c(anchor_date, dates)
     polygon(c(band_dates, rev(band_dates)), c(anchor, lo95, rev(c(anchor, hi95))), col = BAND_95, border = NA)
@@ -386,35 +369,31 @@ run_final_two_models <- function() {
       lines(c(anchor_date, actual$date), c(anchor, actual$price), col = ACTUAL_COLOR, lwd = 2)
       if (nrow(actual) <= 24L) points(actual$date, actual$price, pch = 16, col = ACTUAL_COLOR)
     }
-    legend("topleft", c("Observed price used for fitting", "Forecast mean", "80% prediction interval",
-      "95% prediction interval", if (!is.null(actual)) actual_label),
-      col = c(HISTORY_COLOR, color, BAND_80, BAND_95, if (!is.null(actual)) ACTUAL_COLOR),
-      lwd = c(2, 2.5, 8, 8, if (!is.null(actual)) 2), bty = "n", cex = .8,
+    legend("topleft", c("Observed", label, "80% interval", "95% interval",
+      if (!is.null(actual)) "Actual", if (!is.null(unscored_from)) "No actuals"),
+      col = c(HISTORY_COLOR, color, BAND_80, BAND_95, if (!is.null(actual)) ACTUAL_COLOR,
+        if (!is.null(unscored_from)) "#f1f5f9"),
+      lwd = c(2, 2.5, 8, 8, if (!is.null(actual)) 2, if (!is.null(unscored_from)) 8), bty = "n", cex = .8,
       ncol = if (h > 24L) 1 else 2)
-    mtext(subheading, side = 3, line = .35, cex = .8)
   }
   test_actual_df <- data.frame(date = test_dates, price = test_actual)
   for (m in MODELS) {
-    s <- test_scores[test_scores$model == m, ]
     figure(paste0("06_test_forecast_", slug(m)), function() {
-      draw_fan(test_fc[[m]], N_TRAIN, N_TEST, MODEL_COLORS[m],
-        paste0(m, " (", describe_fit(test_fits[[m]]), "): test forecast for 2014"),
-        sprintf("Fitted on Jan 1980-Dec 2013 only | 2014 test: RMSE $%.4f, MAE $%.4f, MAPE %.2f%%, MASE %.3f",
-          s$RMSE, s$MAE, s$MAPE, s$MASE),
-        "2011-01-01", test_actual_df, "Held-out 2014 actual (test data)")
+      draw_fan(test_fc[[m]], N_TRAIN, N_TEST, MODEL_COLORS[m], paste(m, "forecast"),
+        "2011-01-01", test_actual_df)
     })
   }
 
   # ---- Task 4: comparison figures -----------------------------------------------------
   figure("07_test_comparison", function() {
     layout(matrix(1:2, 2), heights = c(3, 2))
-    par(mar = c(2.5, 5, 4, 1))
+    par(mar = c(2.5, 5, 1, 1))
     past <- which(model_data$date >= as.Date("2013-01-01") & seq_len(nrow(model_data)) <= N_TRAIN)
     origin <- model_data$date[N_TRAIN]
     y_range <- range(model_data$price[c(past, test_id)], sapply(test_fc, function(fc) as.numeric(fc$mean)))
     y_range[2] <- y_range[2] + .1 * diff(y_range)
     plot(range(model_data$date[past], test_dates), y_range, type = "n", xlab = "",
-      ylab = "U.S. dollars per dozen", main = "Both models against the 2014 test data")
+      ylab = "U.S. dollars per dozen")
     lines(model_data$date[c(past, test_id)], model_data$price[c(past, test_id)], col = HISTORY_COLOR, lwd = 2)
     points(test_dates, test_actual, pch = 16, col = HISTORY_COLOR)
     abline(v = origin, col = "#64748b", lty = 2)
@@ -422,13 +401,13 @@ run_final_two_models <- function() {
       lines(c(origin, test_dates), c(model_data$price[N_TRAIN], test_fc[[m]]$mean),
         col = MODEL_COLORS[m], lwd = 2.5, lty = MODEL_LTY[m])
     }
-    legend("topleft", c("Observed (2014 = test data)", paste(MODELS, "forecast")),
+    legend("topleft", c("Observed", paste(MODELS, "forecast")),
       col = c(HISTORY_COLOR, MODEL_COLORS[MODELS]), lty = c(1, MODEL_LTY[MODELS]), lwd = 2.5,
       bg = "white", box.col = "white", inset = .01, cex = .8, ncol = 3)
-    par(mar = c(4.5, 5, 2.5, 1))
+    par(mar = c(4.5, 5, 1, 1))
     err <- sapply(MODELS, function(m) test_predictions$error[test_predictions$model == m])
     plot(range(test_dates), range(err, 0), type = "n", xlab = "Month",
-      ylab = "Actual minus forecast ($)", main = "Monthly test error (positive = forecast too low)")
+      ylab = "Actual minus forecast ($)")
     abline(h = 0, col = "#334155")
     for (m in MODELS) {
       lines(test_dates, err[, m], col = MODEL_COLORS[m], lwd = 2, lty = MODEL_LTY[m])
@@ -438,7 +417,7 @@ run_final_two_models <- function() {
       pch = c(17, 16), bty = "n", cex = .8, ncol = 2)
   }, height = 1300L)
   figure("08_accuracy_comparison", function() {
-    par(mfrow = c(1, 3), mar = c(4.5, 5, 4, 1), oma = c(0, 0, 2, 0))
+    par(mfrow = c(1, 3), mar = c(2.5, 5, 3, 1))
     s <- test_scores[match(MODELS, test_scores$model), ]
     panels <- list(list(cols = c("ME", "MAE", "RMSE"), ylab = "U.S. dollars per dozen", fmt = "%.4f"),
       list(cols = "MAPE", ylab = "Percent", fmt = "%.2f"), list(cols = "MASE", ylab = "Ratio (no units)", fmt = "%.3f"))
@@ -448,13 +427,11 @@ run_final_two_models <- function() {
       rownames(v) <- MODELS
       lim <- range(0, v) * 1.25
       bars <- barplot(v, beside = TRUE, col = MODEL_COLORS[MODELS], border = NA, ylim = lim,
-        ylab = p$ylab, main = paste(p$cols, collapse = ", "), xlab = "Error measure")
+        ylab = p$ylab, main = paste(p$cols, collapse = ", "))
       abline(h = 0, col = "#334155")
       text(bars, v, sprintf(p$fmt, v), pos = ifelse(v >= 0, 3, 1), cex = .75)
     }
     legend("topright", MODELS, fill = MODEL_COLORS[MODELS], border = NA, bty = "n", cex = .85)
-    mtext("2014 test-year error measures (12 forecasts from a Dec 2013 origin): lower is better; for ME, closer to 0", side = 3,
-      outer = TRUE, line = .3, font = 2, col = HISTORY_COLOR)
   }, height = 900L, width = 1800L)
 
   # ---- Task 5: refit through Dec 2014 and forecast with the better model ----------------
@@ -487,13 +464,13 @@ run_final_two_models <- function() {
   forecast_table$in95 <- with(forecast_table, actual_posthoc >= lower95 & actual_posthoc <= upper95)
   n_scored <- sum(forecast_table$scored)
   stopifnot(nrow(posthoc) == 124L, n_scored == 124L, all(forecast_table$scored[1:124]),
-    !any(forecast_table$scored[125:H_LONG]), max(fc_dates) == as.Date("2029-12-01"),
+    !any(forecast_table$scored[125:H_LONG]), max(fc_dates) == as.Date("2026-12-01"),
     all(is.finite(as.matrix(forecast_table[, 4:8]))),
     all(forecast_table$lower95 <= forecast_table$lower80), all(forecast_table$lower80 <= forecast_table$mean),
     all(forecast_table$mean <= forecast_table$upper80), all(forecast_table$upper80 <= forecast_table$upper95))
   save_csv(forecast_table[1:H_SHORT, ], "better_forecast_6_months")
   save_csv(forecast_table[1:H_YEAR, ], "better_forecast_12_months")
-  save_csv(forecast_table, "better_forecast_180_months")
+  save_csv(forecast_table, "better_forecast_144_months")
   gap_rows <- function(k, label) {
     z <- forecast_table[forecast_table$horizon <= k & forecast_table$scored, ]
     data.frame(window = label, model = better, months_scored = nrow(z),
@@ -505,7 +482,7 @@ run_final_two_models <- function() {
   gap_summary <- rbind(gap_rows(H_SHORT, "6 months: Jan-Jun 2015"),
     gap_rows(H_YEAR, "12 months: Jan-Dec 2015"),
     gap_rows(n_scored, "124 months: Jan 2015-Apr 2025 (all available actuals)"),
-    data.frame(window = "Months 125-180: May 2025-Dec 2029", model = better, months_scored = 0L,
+    data.frame(window = "Months 125-144: May 2025-Dec 2026", model = better, months_scored = 0L,
       ME = NA, MAE = NA, RMSE = NA, MAPE = NA, Coverage80 = NA, Coverage95 = NA,
       months_actual_above_forecast = NA, mean_actual = NA,
       mean_forecast = mean(forecast_table$mean[!forecast_table$scored]),
@@ -520,29 +497,21 @@ run_final_two_models <- function() {
       Coverage80 = mean(z$in80), Coverage95 = mean(z$in95))
   }))
   save_csv(gap_by_year, "gap_by_year")
-  final_label <- describe_fit(final_fits[[better]])
   horizon_plots <- list(
     list(name = "09_better_forecast_6_months", h = H_SHORT, from = "2010-01-01", what = "6-month"),
     list(name = "10_better_forecast_12_months", h = H_YEAR, from = "2010-01-01", what = "12-month"),
-    list(name = "11_better_forecast_180_months", h = H_LONG, from = "2000-01-01", what = "180-month (15-year)"))
+    list(name = "11_better_forecast_144_months", h = H_LONG, from = "2000-01-01", what = "144-month"))
   for (p in horizon_plots) {
     rows <- forecast_table[seq_len(p$h), ]
     shown <- rows[rows$scored, c("date", "actual_posthoc")]
     names(shown) <- c("date", "price")
-    g <- gap_rows(p$h, "")
     unscored <- if (p$h > n_scored) fc_dates[n_scored + 1L] else NULL
-    heading <- paste0(better, " ", p$what, " forecast from Dec 2014: ", month_label(rows$date))
     figure(paste0(p$name, "_clean"), function() {
-      draw_fan(fc_long, nrow(model_data), p$h, MODEL_COLORS[better], heading,
-        paste0(final_label, " fitted on Jan 1980-Dec 2014 | point forecast with 80% and 95% prediction intervals"),
-        p$from)
+      draw_fan(fc_long, nrow(model_data), p$h, MODEL_COLORS[better], paste(better, "forecast"), p$from)
     })
     figure(p$name, function() {
-      draw_fan(fc_long, nrow(model_data), p$h, MODEL_COLORS[better], heading,
-        sprintf("Post-hoc check on %d months with actuals: RMSE $%.3f, MAE $%.3f, 95%% coverage %.0f%%%s",
-          g$months_scored, g$RMSE, g$MAE, 100 * g$Coverage95,
-          if (is.null(unscored)) "" else "; May 2025-Dec 2029 unscored"),
-        p$from, shown, "Actual price (post-hoc only, never used in fitting)", unscored)
+      draw_fan(fc_long, nrow(model_data), p$h, MODEL_COLORS[better], paste(better, "forecast"),
+        p$from, shown, unscored)
     })
   }
   figure("12_gap_by_year", function() {
@@ -550,15 +519,12 @@ run_final_two_models <- function() {
     bars <- barplot(gap_by_year$ME, names.arg = ifelse(gap_by_year$months < 12,
       paste0(gap_by_year$year, "*"), gap_by_year$year), border = NA,
       col = ifelse(gap_by_year$ME >= 0, ACTUAL_COLOR, "#2563eb"),
-      ylim = range(0, gap_by_year$ME) + c(-.1, .1) * gap_span, xlab = "Calendar year",
-      ylab = "Mean of actual minus forecast ($/dozen)",
-      main = paste0("Post-hoc gap by year: actual price minus the ", better, " projection"))
+      ylim = range(0, gap_by_year$ME) + c(-.1, .1) * gap_span, xlab = "Calendar year (* = Jan-Apr only)",
+      ylab = "Mean actual minus forecast ($/dozen)")
     abline(h = 0, col = "#334155")
     text(bars, gap_by_year$ME, sprintf("%.2f", gap_by_year$ME), pos = ifelse(gap_by_year$ME >= 0, 3, 1), cex = .75)
-    legend("topleft", c("Actual above projection", "Actual below projection"),
+    legend("topleft", c("Actual above forecast", "Actual below forecast"),
       fill = c(ACTUAL_COLOR, "#2563eb"), border = NA, bty = "n", cex = .8)
-    mtext("Forecast error of a pre-2015 model (outbreaks, inflation, feed costs, cage-free rules), not a causal estimate | * 2025 = Jan-Apr only",
-      side = 3, line = .35, cex = .72)
   })
 
   # ---- Fitted structures and parameters ---------------------------------------------
@@ -669,7 +635,7 @@ run_final_two_models <- function() {
 
   # ---- Reproducibility outputs and the file guide -------------------------------------------
   saveRDS(list(test_fits = test_fits, test_forecasts = test_fc, final_fits = final_fits,
-    better = better, arima_order = arima_order, forecast_180 = fc_long),
+    better = better, arima_order = arima_order, forecast_144 = fc_long),
     file.path(out, "fitted_models.rds"))
   writeLines(trimws(capture.output(sessionInfo()), which = "right"), file.path(out, "session_info.txt"))
   show <- function(x, digits = 4) print(x, row.names = FALSE, digits = digits)
@@ -689,13 +655,13 @@ run_final_two_models <- function() {
     cat("\nGAP BY YEAR\n"); show(gap_by_year)
     cat("\nSENSITIVITY: OTHER SINGLE TEST YEARS (context only)\n"); show(other_years)
     cat("\nLEAKAGE CHECKS\n"); show(leakage)
-    cat("\nLowest 95% bound over 180 months:", sprintf("%.3f", min(forecast_table$lower95)), "\n")
+    cat("\nLowest 95% bound over 144 months:", sprintf("%.3f", min(forecast_table$lower95)), "\n")
   }, file = file.path(out, "results.txt"))
   file_guide <- data.frame(file = c("data_check.csv", "exploration_summary.csv",
       "exploration_by_decade.csv", "accuracy_table.csv", "test_predictions_2014.csv",
       "test_accuracy_by_half_year.csv", "better_model.csv", "residual_diagnostics.csv",
       "residual_sd_by_decade.csv", "model_structures.csv", "model_parameters.csv",
-      "better_forecast_6_months.csv", "better_forecast_12_months.csv", "better_forecast_180_months.csv",
+      "better_forecast_6_months.csv", "better_forecast_12_months.csv", "better_forecast_144_months.csv",
       "gap_summary.csv", "gap_by_year.csv", "sensitivity_other_test_years.csv", "leakage_checks.csv",
       "results.txt", "session_info.txt", "fitted_models.rds", "file_guide.csv",
       "figures/01_history_with_cuts.png", "figures/02_correlogram.png",
@@ -704,7 +670,7 @@ run_final_two_models <- function() {
       paste0("figures/06_test_forecast_", slug(MODELS), ".png"),
       "figures/07_test_comparison.png", "figures/08_accuracy_comparison.png",
       paste0("figures/", c("09_better_forecast_6_months", "10_better_forecast_12_months",
-        "11_better_forecast_180_months"), rep(c("", "_clean"), each = 3), ".png"),
+        "11_better_forecast_144_months"), rep(c("", "_clean"), each = 3), ".png"),
       "figures/12_gap_by_year.png"),
     contents = c("Completeness checks of the source file and the month counts per split",
       "Training-data exploration numbers: ACF/PACF values, STL strengths, peak and trough months, ndiffs",
@@ -719,7 +685,7 @@ run_final_two_models <- function() {
       "Estimated parameters (alpha, beta, phi; AR coefficients with standard errors)",
       "Better model, Jan-Jun 2015 forecast and intervals, with post-hoc actuals",
       "Better model, Jan-Dec 2015 forecast and intervals, with post-hoc actuals",
-      "Better model, Jan 2015-Dec 2029; months after Apr 2025 are marked unscored",
+      "Better model, Jan 2015-Dec 2026; months after Apr 2025 are marked unscored",
       "Post-hoc gap at 6, 12 and 124 months (ME, MAE, RMSE, MAPE, coverage); 56 months unscored",
       "Post-hoc gap by calendar year 2015-2025 (2025 = Jan-Apr)",
       "Context only: both models re-run with test years 2005-2014 (not used to choose)",
@@ -733,8 +699,8 @@ run_final_two_models <- function() {
       paste(MODELS, "2014 test forecast with intervals and the test data"),
       "Both 2014 test forecasts and monthly errors on one figure",
       "Bar chart of the 2014 error measures for both models",
-      paste("Better model forecast with intervals and post-hoc actuals:", c("6", "12", "180"), "months"),
-      paste("Better model forecast with intervals, no actuals:", c("6", "12", "180"), "months"),
+      paste("Better model forecast with intervals and post-hoc actuals:", c("6", "12", "144"), "months"),
+      paste("Better model forecast with intervals, no actuals:", c("6", "12", "144"), "months"),
       "Signed post-hoc gap by year"),
     pdf_task = c("Task 2", "Task 2", "Task 2 / Task 6 confidence", "Task 3 / Task 4", "Task 3",
       "Task 4", "Task 4", "Task 3 / Task 4", "Task 6 confidence", "Task 3 parameters",

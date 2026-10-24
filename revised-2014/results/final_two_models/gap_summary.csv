@@ -2,4 +2,4 @@
 "6 months: Jan-Jun 2015","Seasonal ARIMA",6,-0.00867273455034904,0.153699196846955,0.204457117212968,6.80445716795069,0.666666666666667,0.833333333333333,1,2.15516666666667,2.16383940121702,"Post-hoc: actuals not used for fitting or choice"
 "12 months: Jan-Dec 2015","Seasonal ARIMA",12,0.306534749652587,0.387720715351239,0.474669259150883,14.4663699972819,0.333333333333333,0.416666666666667,7,2.46941666666667,2.16288191701408,"Post-hoc: actuals not used for fitting or choice"
 "124 months: Jan 2015-Apr 2025 (all available actuals)","Seasonal ARIMA",124,-0.104416302480372,0.772835314569408,0.973869480981595,37.7352266235807,0.548387096774194,0.75,40,2.18829032258065,2.29270662506102,"Post-hoc: actuals not used for fitting or choice"
-"Months 125-180: May 2025-Dec 2029","Seasonal ARIMA",0,NA,NA,NA,NA,NA,NA,NA,NA,2.33705323502986,"Unscored extrapolation: no actual prices exist for these months"
+"Months 125-144: May 2025-Dec 2026","Seasonal ARIMA",0,NA,NA,NA,NA,NA,NA,NA,NA,2.33657664467703,"Unscored extrapolation: no actual prices exist for these months"

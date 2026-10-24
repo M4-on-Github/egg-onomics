@@ -22,7 +22,7 @@
   - training Jan 1980-Dec 2013 and test Jan-Dec 2014, with no validation set;
   - the better model chosen by 2014 test RMSE, using the tie rule in the
     script;
-  - a refit through Dec 2014 and 6/12/180-month forecasts;
+  - a refit through Dec 2014 and 6/12/144-month forecasts;
   - a gap scored only on the 124 months with actuals.
 
   Do not change this design without the team's agreement. Keep the older

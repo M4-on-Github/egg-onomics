@@ -26,10 +26,10 @@ the record.
   $0.0753 for Damped Holt. Seasonal ARIMA wins on MAE, RMSE, MAPE and MASE;
   Damped Holt has the smaller mean error.
 - **Forecasts:** better model only, refit through December 2014, for 6, 12 and
-  180 months (January 2015-December 2029). The PDF's Task 5 asks for "about 10
-  time steps", which is answered by the 12-month forecast. The 180-month
+  144 months (January 2015-December 2026). The PDF's Task 5 asks for "about 10
+  time steps", which is answered by the 12-month forecast. The 144-month
   forecast is an extra; only its first 124 months have actual prices to compare
-  against, and months 125-180 are left unscored.
+  against, and months 125-144 are left unscored.
 - **Leakage:** no post-2014 price is used for fitting, choosing or test
   scoring. `leakage_checks.csv` records 9 checks, all passed.
 - **Gap framing:** the post-hoc gap is the forecast error of a pre-2015 model.
@@ -138,7 +138,7 @@ to use this folder's own data and results.
 | `results/fitted_models.rds` | Saved models |
 | `results/session_info.txt` | R and package versions from the last full run |
 | `MANIFEST.csv` | SHA-256 hashes and sizes of the packaged files |
-| `analysis/final_two_models.R` | **Final design:** Damped Holt vs Seasonal ARIMA, 2014 test, 6/12/180-month forecasts, post-hoc gap |
+| `analysis/final_two_models.R` | **Final design:** Damped Holt vs Seasonal ARIMA, 2014 test, 6/12/144-month forecasts, post-hoc gap |
 | `results/final_two_models/` | **Final design outputs:** tables, `results.txt`, `file_guide.csv` and 17 figures |
 | `GUIDE_FOR_REPORT_AND_SLIDES.md` | Hints, numbers, traps and checklist for the team's own report and slides (no draft text) |
 | `analysis/one_year_test.R`, `results/one_year_test/` | Earlier alternative: nine models, one 12-month test in 2014 |
@@ -269,7 +269,7 @@ not change the online report.
 
 - Team decision: two models only (Damped Holt, Seasonal ARIMA); no validation
   set; train Jan 1980-Dec 2013; test Jan-Dec 2014; better model by test RMSE
-  with a stated tie rule; refit through Dec 2014; forecast 6, 12 and 180 months;
+  with a stated tie rule; refit through Dec 2014; forecast 6, 12 and 144 months;
   post-hoc gap scored on the 124 months with actuals. Chronos, the other seven
   models and the 6+6 split are not part of this design.
 - New `analysis/final_two_models.R` writes `results/final_two_models/`. Nothing
@@ -285,6 +285,6 @@ not change the online report.
   - Damped Holt's beta is at its lower bound, so it behaves like simple
     exponential smoothing.
   - Both models fail Ljung-Box at 5%.
-  - The 95% lower bound goes below $0 from Feb 2027 (unscored months only).
+  - The 95% lower bound stays above $0 through Dec 2026 (lowest $0.015).
   - Seasonal ARIMA is not in the PDF's example list of methods.
 - Added `GUIDE_FOR_REPORT_AND_SLIDES.md` (hints only; no report or slide text).
