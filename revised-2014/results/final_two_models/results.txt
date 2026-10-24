@@ -69,6 +69,33 @@ PARAMETERS
  Final fit Seasonal ARIMA      sar2  0.233553   0.04792
  Final fit Seasonal ARIMA     sigma  0.068916        NA
 
+MAIN FINAL FORECAST: JAN-DEC 2015 (refit through Dec 2014; no later actuals)
+       date  mean lower80 upper80 lower95 upper95
+ 2015-01-01 2.162   2.074   2.250   2.027   2.297
+ 2015-02-01 2.172   2.058   2.286   1.998   2.347
+ 2015-03-01 2.177   2.040   2.313   1.968   2.385
+ 2015-04-01 2.189   2.033   2.344   1.951   2.427
+ 2015-05-01 2.149   1.976   2.321   1.885   2.413
+ 2015-06-01 2.135   1.947   2.323   1.847   2.422
+ 2015-07-01 2.129   1.927   2.332   1.820   2.439
+ 2015-08-01 2.137   1.922   2.353   1.807   2.467
+ 2015-09-01 2.149   1.921   2.377   1.800   2.498
+ 2015-10-01 2.151   1.911   2.391   1.784   2.518
+ 2015-11-01 2.170   1.919   2.421   1.785   2.554
+ 2015-12-01 2.235   1.973   2.497   1.834   2.636
+
+INFLATION COMPARISON (provisional Sep 2026 CPI benchmark)
+          model actual_year actual_months actual_nominal_mean forecast_year
+ Seasonal ARIMA        1980            12              0.8438          2026
+ forecast_months forecast_nominal_mean  cpi_series base_cpi_period base_cpi
+              12                 2.337 CUUR0000SA0            1980     82.4
+ benchmark_cpi_period benchmark_cpi inflation_factor
+              2026-09         336.9            4.089
+ actual_1980_in_benchmark_dollars forecast_difference_pct provisional
+                            3.451                  -32.28        TRUE
+                                                                                                                                                              note
+ 1980 annual-average price adjusted to Sep 2026 purchasing power; 2026 value is a mean forecast, not an actual price; CPI benchmark is not the 2026 annual average
+
 POST-HOC GAP SUMMARY (Seasonal ARIMA)
                                                 window months_scored        ME
                                 6 months: Jan-Jun 2015             6 -0.008673

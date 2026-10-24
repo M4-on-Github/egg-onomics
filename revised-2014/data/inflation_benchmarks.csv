@@ -1,0 +1,3 @@
+series_id,period,aggregation,cpi,index_base,source_url,retrieved_on
+CUUR0000SA0,1980,Annual average,82.4,1982-1984=100,https://www.bls.gov/cpi/tables/historical-cpi-u-201711.pdf,2026-10-24
+CUUR0000SA0,2026-09,Monthly observation,336.940,1982-1984=100,https://www.bls.gov/news.release/cpi.t01.htm,2026-10-24

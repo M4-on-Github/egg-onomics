@@ -1,7 +1,7 @@
 # Egg-onomics: revised 2014 study
 
 This is the current working folder. Keep this file updated as the plan, code,
-results or report changes. Last updated: **23 October 2026**.
+results or report changes. Last updated: **24 October 2026**.
 
 ## Final two-model design (use this for the report)
 
@@ -37,8 +37,8 @@ the record.
   ways (below the projection in 2016-2021, above it in 2022-2025), so the gap
   RMSE is not a "cost of the shocks".
 
-Run it from this folder. It takes about 1 minute and needs the `forecast` and
-`jsonlite` packages, the same as `forecast.R`:
+Run it from this folder. It takes about 1 minute and needs the `forecast`
+package. Install it once with `install.packages("forecast")`:
 
 ```text
 Rscript analysis/final_two_models.R
@@ -52,11 +52,35 @@ source("analysis/final_two_models.R")
 
 All outputs go to `results/final_two_models/`. `results.txt` prints every key
 table on one page, and `file_guide.csv` maps each file to the PDF task it
-supports. The script reuses functions from `analysis/helpers.R` without
-changing them. It does not touch `analysis/forecast.R` or any older result.
+supports. Reusable fitting, scoring, plotting and inflation functions are in
+`analysis/final_helpers.R`. The final study no longer loads the older
+`analysis/helpers.R` or changes `EGG_FORECAST_OUTPUT`. `EGG_DATA_FILE` can
+override the input file and `EGG_FINAL_OUTPUT` can override the output folder.
+The older `analysis/forecast.R` and its helpers remain available for the record.
 `GUIDE_FOR_REPORT_AND_SLIDES.md` gives hints for the report and the individual
 slides. It contains no report text and no slide text, because the team must
 write those.
+
+### Report-ready outputs added 24 October 2026
+
+- `figures/13_final_forecast_2015.png` and `report_final_forecast_2015.csv`
+  identify the main Task 5 forecast: Jan-Dec 2015 from the Dec 2014 origin,
+  with 80%/95% prediction intervals and no later actual prices. The forecast
+  is the existing 12-month path, not a new model or fitting procedure.
+- `report_model_parameters.csv` contains the key coefficients and meanings
+  for both test fits and the selected model's final refit, with fitting dates.
+- `inflation_comparison.csv` and `figures/14_inflation_comparison.png` compare
+  the 1980 average actual price ($0.843833) with the 2026 average forecast
+  ($2.336812). `data/inflation_benchmarks.csv` records the CPI-U all-items
+  series, values, periods, source links and retrieval date. The 1980 annual
+  CPI is 82.4; the Sep 2026 monthly benchmark is 336.940. The adjusted 1980
+  price is $3.450500, making the forecast 32.28% lower. This is provisional:
+  a monthly CPI benchmark is not the completed annual average for 2026,
+  and the 2026 egg price is a forecast. CPI is never used to fit or choose a model.
+
+The Google Doc report uses the main 2015 forecast separately from the 2014
+test forecast and the additional 12-year projection. The two-model design,
+existing forecasts and 2014 scores remain unchanged.
 
 ## Earlier plan: 6+6 design (superseded by the final two-model design above)
 
@@ -79,7 +103,7 @@ a separate zoomed data-split graph.
 
 ![Full egg-price history with data cuts](results/figures/00_history.png)
 
-## Run the project
+## Run the earlier 6+6 analysis (historical)
 
 Open `egg-onomics.Rproj` in RStudio. Install the two R packages once if needed:
 
@@ -119,10 +143,10 @@ to use this folder's own data and results.
 | `README.md` | Main plan, current status and work log |
 | `egg-onomics.Rproj` | RStudio project |
 | `analysis/forecast.R` | Import, splits, all nine models, evaluation and plots |
-| `analysis/helpers.R` | Model functions, colors and the full-history cut graph |
+| `analysis/helpers.R` | Helpers for the earlier nine-model study |
 | `analysis/viewer.R` | Builds the HTML results viewer |
 | `data/APU0000708111.csv` | Original full input, kept unchanged |
-| `results/index.html` | Open this for the current charts and tables |
+| `results/index.html` | Earlier 6+6 study viewer |
 | `results/figures/00_history.png` | The single full-history data-cut graph |
 | `results/data_splits.csv` | Exact training, validation and test dates |
 | `results/plot_cut_dates.csv` | The three vertical cut-line dates |
@@ -139,7 +163,8 @@ to use this folder's own data and results.
 | `results/session_info.txt` | R and package versions from the last full run |
 | `MANIFEST.csv` | SHA-256 hashes and sizes of the packaged files |
 | `analysis/final_two_models.R` | **Final design:** Damped Holt vs Seasonal ARIMA, 2014 test, 6/12/144-month forecasts, post-hoc gap |
-| `results/final_two_models/` | **Final design outputs:** tables, `results.txt`, `file_guide.csv` and 17 figures |
+| `analysis/final_helpers.R` | Final-study fitting, scoring, plotting, inflation calculation and output catalog |
+| `results/final_two_models/` | **Final design outputs:** tables, `results.txt`, `file_guide.csv` and 19 figures |
 | `GUIDE_FOR_REPORT_AND_SLIDES.md` | Hints, numbers, traps and checklist for the team's own report and slides (no draft text) |
 | `analysis/one_year_test.R`, `results/one_year_test/` | Earlier alternative: nine models, one 12-month test in 2014 |
 | `analysis/val_test_12m.R`, `results/val_test_12m/` | Earlier alternative: 2013 validation, 2014 test |
@@ -288,3 +313,30 @@ not change the online report.
   - The 95% lower bound stays above $0 through Dec 2026 (lowest $0.015).
   - Seasonal ARIMA is not in the PDF's example list of methods.
 - Added `GUIDE_FOR_REPORT_AND_SLIDES.md` (hints only; no report or slide text).
+
+### 24 October 2026 (report requirements and reproducible inflation comparison)
+
+- Added a clearly named main 2015 forecast figure/table, compact parameter
+  export and source-recorded inflation comparison to `analysis/final_two_models.R`.
+- Corrected the file guide to show 20 unscored long-forecast months (125-144).
+- Full R rerun passed. Existing accuracy, monthly predictions, 144-month
+  forecasts, fitted parameter tables and all 9 leakage checks match the
+  preceding outputs exactly. STL exploration values differ only at floating-point precision.
+- Updated the report with the main forecast, parameter explanations, figure
+  captions, practical conclusions and corrections to superseded definitions.
+
+### 24 October 2026 (R code cleanup)
+
+- Split reusable functions into `analysis/final_helpers.R`, leaving the main
+  script as the study workflow. The final script now needs only `forecast`
+  and does not load the older nine-model helpers or change the caller's
+  output environment variable.
+- Made forecast-plot inputs and the MASE scale explicit, replaced the
+  residual-summary `<<-` side effect with a returned table, and grouped each
+  output filename with its description and task in one catalog.
+- Applied consistent R formatting and section headings. The dates, models,
+  choice rule, output filenames and plot styling are unchanged.
+- Verified a full run from outside the project directory: all 22 CSV tables
+  match the prior results numerically (STL values checked to 1e-12), all 19
+  PNG graphs are byte-for-byte identical, and all 9 leakage checks pass.
+  The caller's `EGG_FORECAST_OUTPUT` value is preserved.
