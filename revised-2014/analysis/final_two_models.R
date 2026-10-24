@@ -1,14 +1,8 @@
-# FINAL STUDY for the report: Damped Holt and Seasonal ARIMA on monthly egg prices.
 # Training Jan 1980-Dec 2013 (408 months). Test Jan-Dec 2014 (12 months). No validation set.
-# The model with the lower 2014 test RMSE is refitted through Dec 2014 and projected
-# 6, 12 and 144 months ahead (Jan 2015-Dec 2026). Actual prices after Dec 2014 are used
-# ONLY in the post-hoc gap tables and plots, never for fitting or for choosing a model.
-# All models work on original dollar prices (no log transform).
-# Run from revised-2014/:  Rscript analysis/final_two_models.R   (or Source it in RStudio)
-# Writes tables to results/final_two_models/ and figures to results/final_two_models/figures/.
+# predict 6, 12 and 144 months ahead (Jan 2015-Dec 2026).
 
 run_final_two_models <- function() {
-  # ---- Project paths and helpers -----------------------------------------
+  # Project paths and helpers
   source_files <- unlist(lapply(sys.frames(), function(fr) {
     if (!is.null(fr$ofile)) as.character(fr$ofile) else character()
   }))
