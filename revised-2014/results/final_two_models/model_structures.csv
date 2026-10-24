@@ -1,0 +1,6 @@
+"stage","model","structure","how_chosen","fit_start","fit_end","months","log_likelihood","AIC","AICc","BIC","sigma"
+"Test fit","Damped Holt","ETS(A,Ad,N)","ETS(A,Ad,N) set by the team; parameters by maximum likelihood","1980-01-01","2013-12-01",408,-163.561068507755,339.122137015511,339.331613324738,363.189740061936,0.0743788754829123
+"Test fit","Seasonal ARIMA","ARIMA(1,1,0)(2,0,0)[12]","auto.arima seasonal search (AICc, stepwise, exact ML) on the training data","1980-01-01","2013-12-01",408,510.954584779831,-1013.90916955966,-1013.8096670721,-997.873916817891,0.068994903913461
+"Final fit","Damped Holt","ETS(A,Ad,N)","ETS(A,Ad,N) set by the team; parameters by maximum likelihood","1980-01-01","2014-12-01",420,-174.550403634898,361.100807269796,361.304197100304,385.34233553746,0.074381869155738
+"Final fit","Seasonal ARIMA","ARIMA(1,1,0)(2,0,0)[12]","Order fixed from the training search; coefficients re-estimated by ML","1980-01-01","2014-12-01",420,526.463423818548,-1044.9268476371,-1044.83022927961,-1028.77536395741,0.0689163174743605
+"Check only (not used)","Seasonal ARIMA","ARIMA(1,1,0)(2,0,0)[12]","Fresh auto.arima search on Jan 1980-Dec 2014, to see if the fixed order still wins","1980-01-01","2014-12-01",420,526.463423818548,-1044.9268476371,-1044.83022927961,-1028.77536395741,0.0689163174743605

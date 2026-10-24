@@ -88,7 +88,7 @@ run_forecast <- function() {
     if (method %in% ARIMA_METHODS) {
       forecast::auto.arima(y, seasonal = method == "Seasonal ARIMA search",
         ic = "aicc", stepwise = TRUE, approximation = FALSE, method = "ML",
-        lambda = 0, biasadj = TRUE, trace = FALSE)
+        trace = FALSE)
     } else fit_one(y, method, H)
   }
   fit_stage <- function(end, label) {
@@ -323,8 +323,8 @@ run_forecast <- function() {
   figure("05_projection_selected", function() draw_gap(selected,
     paste0("Projection from Jan 2015 vs actual: ", selected,
       " (gap includes outbreaks and other post-2014 changes)")))
-  figure("06_projection_naive", function() draw_gap("Naive",
-    "Projection from Jan 2015 vs actual: Naive"))
+  figure("06_projection_auto_ets", function() draw_gap("Auto ETS",
+    "Projection from Jan 2015 vs actual: Auto ETS (seasonal contrast)"))
   figure("04_accuracy_comparison", function() {
     par(mfrow = c(1, 2), mar = c(10, 5, 4, 1))
     for (stage in c("Validation", "Test")) {
@@ -348,21 +348,21 @@ run_forecast <- function() {
   training <- fit_history(train_n)
   figure("00_training_acf", function() {
     par(mfrow = c(1, 2))
-    draw_acf(log(training), "Training log-price ACF", 48L)
-    draw_acf(diff(log(training)), "Monthly log-change ACF", 48L, "#0f766e")
+    draw_acf(training, "Training price ACF", 48L)
+    draw_acf(diff(training), "Monthly price-change ACF", 48L, "#0f766e")
   })
-  decomposition <- stl(log(training), s.window = "periodic", robust = TRUE)
+  decomposition <- stl(training, s.window = "periodic", robust = TRUE)
   seasonal_strength <- max(0, 1 - var(decomposition$time.series[, "remainder"]) /
     var(decomposition$time.series[, "seasonal"] + decomposition$time.series[, "remainder"]))
   figure("00_training_stl", function() {
-    plot(decomposition, main = "Training log-price STL decomposition", col = "#2563eb")
+    plot(decomposition, main = "Training price STL decomposition", col = "#2563eb")
   }, height = 1200L)
   diagnostics <- do.call(rbind, lapply(ALL_METHODS, function(method) {
     fit <- train_models[[method]]
     residual <- as.numeric(residuals(fit))
     finite <- is.finite(residual)
     good <- residual[finite]
-    unit <- if (method %in% c("Naive", "Seasonal naive")) "Dollar residual" else "Log-price innovation"
+    unit <- "Dollar residual"
     df <- if (inherits(fit, "Arima")) sum(fit$arma[1:4]) else if (inherits(fit, "ets")) {
       sum(names(fit$par) %in% c("alpha", "beta", "gamma", "phi"))
     } else 0
@@ -392,8 +392,8 @@ run_forecast <- function() {
   stopifnot(all(file.exists(file.path(out, individual_plots$file))))
   save_csv(individual_plots, "individual_plot_manifest")
   save_csv(data.frame(seasonal_strength = seasonal_strength,
-    log_acf_lag1 = as.numeric(acf(log(training), lag.max = 12, plot = FALSE)$acf)[2],
-    log_acf_lag12 = as.numeric(acf(log(training), lag.max = 12, plot = FALSE)$acf)[13]), "exploration_summary")
+    acf_lag1 = as.numeric(acf(training, lag.max = 12, plot = FALSE)$acf)[2],
+    acf_lag12 = as.numeric(acf(training, lag.max = 12, plot = FALSE)$acf)[13]), "exploration_summary")
 
   # ---- Evidence viewer and reproducibility outputs ---------------------------
   source(file.path(root, "analysis", "viewer.R"), local = TRUE)

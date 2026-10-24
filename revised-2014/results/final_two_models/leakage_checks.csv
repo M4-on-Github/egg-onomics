@@ -1,0 +1,10 @@
+"check","passed"
+"Damped Holt test fit saw exactly Jan 1980-Dec 2013 (408 months, no 2014 values)",TRUE
+"Seasonal ARIMA test fit saw exactly Jan 1980-Dec 2013 (408 months, no 2014 values)",TRUE
+"Seasonal ARIMA order search ran on Jan 1980-Dec 2013 only",TRUE
+"Damped Holt final fit saw exactly Jan 1980-Dec 2014 (420 months, nothing after 2014)",TRUE
+"Seasonal ARIMA final fit saw exactly Jan 1980-Dec 2014 (420 months, nothing after 2014)",TRUE
+"Check-only research fit saw exactly Jan 1980-Dec 2014",TRUE
+"Every model input series ends on or before Dec 2014",TRUE
+"Test scores (and so the model choice) use only Jan-Dec 2014 actuals, 12 per model",TRUE
+"Sensitivity fits each end on or before Dec 2013",TRUE

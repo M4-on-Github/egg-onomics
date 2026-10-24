@@ -1,0 +1,2 @@
+"better_model","runner_up","decided_by","better_RMSE","runner_up_RMSE","RMSE_difference","RMSE_difference_pct","better_MAE","runner_up_MAE","measures_won_by_better","measures_won_by_runner_up","rule"
+"Seasonal ARIMA","Damped Holt","RMSE",0.0721206559513035,0.075269096313626,0.00314844036232241,4.18291239900598,0.0507580130286573,0.0572582124776857,"MAE RMSE MAPE MASE","|ME|","Lower 2014 test RMSE; tie = equal to $0.001; then lower MAE (to $0.001); then smaller |ME|"

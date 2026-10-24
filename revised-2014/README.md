@@ -3,7 +3,62 @@
 This is the current working folder. Keep this file updated as the plan, code,
 results or report changes. Last updated: **23 October 2026**.
 
-## Current plan
+## Final two-model design (use this for the report)
+
+The team's final design. It replaces the 6+6 plan below for report and slide
+work. The older code, results and alternative designs are kept unchanged for
+the record.
+
+| Use | Dates | Months |
+| --- | --- | ---: |
+| Training | January 1980-December 2013 | 408 |
+| Test (no validation set) | January-December 2014, all from the Dec 2013 origin | 12 |
+| Final refit of the better model | January 1980-December 2014 | 420 |
+| Post-hoc comparison only | January 2015-April 2025 | 124 |
+
+- **Two models, original dollar prices, no transform:** Damped Holt,
+  ETS(A,Ad,N); and Seasonal ARIMA from a seasonal `auto.arima` search on the
+  training data, which gives ARIMA(1,1,0)(2,0,0)[12]. The order is fixed from
+  that search and only the coefficients are re-estimated in the final refit.
+- **Choice rule:** lower 2014 test RMSE. Ties (RMSEs equal to $0.001) go to the
+  lower MAE, then to the smaller absolute ME.
+- **Result (23 October 2026 run):** Seasonal ARIMA, test RMSE $0.0721 against
+  $0.0753 for Damped Holt. Seasonal ARIMA wins on MAE, RMSE, MAPE and MASE;
+  Damped Holt has the smaller mean error.
+- **Forecasts:** better model only, refit through December 2014, for 6, 12 and
+  180 months (January 2015-December 2029). The PDF's Task 5 asks for "about 10
+  time steps", which is answered by the 12-month forecast. The 180-month
+  forecast is an extra; only its first 124 months have actual prices to compare
+  against, and months 125-180 are left unscored.
+- **Leakage:** no post-2014 price is used for fitting, choosing or test
+  scoring. `leakage_checks.csv` records 9 checks, all passed.
+- **Gap framing:** the post-hoc gap is the forecast error of a pre-2015 model.
+  It is not a "prices without the flu" estimate. The signed error runs both
+  ways (below the projection in 2016-2021, above it in 2022-2025), so the gap
+  RMSE is not a "cost of the shocks".
+
+Run it from this folder. It takes about 1 minute and needs the `forecast` and
+`jsonlite` packages, the same as `forecast.R`:
+
+```text
+Rscript analysis/final_two_models.R
+```
+
+or, in RStudio with `egg-onomics.Rproj` open:
+
+```r
+source("analysis/final_two_models.R")
+```
+
+All outputs go to `results/final_two_models/`. `results.txt` prints every key
+table on one page, and `file_guide.csv` maps each file to the PDF task it
+supports. The script reuses functions from `analysis/helpers.R` without
+changing them. It does not touch `analysis/forecast.R` or any older result.
+`GUIDE_FOR_REPORT_AND_SLIDES.md` gives hints for the report and the individual
+slides. It contains no report text and no slide text, because the team must
+write those.
+
+## Earlier plan: 6+6 design (superseded by the final two-model design above)
 
 Use data before 2014 for training, then split 2014 into two six-month periods.
 
@@ -79,19 +134,25 @@ to use this folder's own data and results.
 | `results/forecast_12_months_all_models.csv` | January-December 2015 projections and intervals (added) |
 | `results/projection_2015_2025_all_models.csv` | 124-month projection, January 2015-April 2025 (added) |
 | `results/gap_vs_actual_by_month.csv`, `results/gap_vs_actual_summary.csv` | Post-hoc projection-vs-actual gap, by month and summarised over 6 months, 12 months and the full period (added) |
-| `results/figures/05_projection_selected.png`, `06_projection_naive.png` | Long projection vs actual prices (added) |
+| `results/figures/05_projection_selected.png`, `06_projection_auto_ets.png` | Long projection vs actual prices (added) |
 | `results/fitted_models.rds` | Saved models |
 | `results/session_info.txt` | R and package versions from the last full run |
 | `MANIFEST.csv` | SHA-256 hashes and sizes of the packaged files |
+| `analysis/final_two_models.R` | **Final design:** Damped Holt vs Seasonal ARIMA, 2014 test, 6/12/180-month forecasts, post-hoc gap |
+| `results/final_two_models/` | **Final design outputs:** tables, `results.txt`, `file_guide.csv` and 17 figures |
+| `GUIDE_FOR_REPORT_AND_SLIDES.md` | Hints, numbers, traps and checklist for the team's own report and slides (no draft text) |
+| `analysis/one_year_test.R`, `results/one_year_test/` | Earlier alternative: nine models, one 12-month test in 2014 |
+| `analysis/val_test_12m.R`, `results/val_test_12m/` | Earlier alternative: 2013 validation, 2014 test |
 
-## Current results and status
+## Earlier 6+6 results and status (kept for the record)
 
 - All nine R methods have been run on the revised split: SES, Holt, Damped Holt,
   Holt-Winters, Auto ETS, Naive, Seasonal naive, ARIMA and Seasonal ARIMA search.
-- Naive has the lowest validation RMSE: **$0.054721 per dozen**. ARIMA is almost
-  tied at **$0.054721**; the full-precision CSV values determine the selection.
-- The validation-selected Naive model has test RMSE **$0.113400**. Seasonal ARIMA
-  has the lowest observed test RMSE, **$0.070192**. That test ranking does not
+- All models now work on original dollar prices (the earlier log/bias-adjusted
+  setup was removed; see the 23 October work log). Naive has the lowest
+  validation RMSE, **$0.054721 per dozen**; ARIMA, Damped Holt and SES are within 0.2%.
+- The validation-selected Naive model has test RMSE **$0.113400**. Auto ETS has
+  the lowest observed test RMSE, **$0.062112**, then Seasonal ARIMA **$0.069658**. That test ranking does not
   replace the validation choice.
 - The January-June 2015 forecasts are saved projections only. Actual prices from
   those months are not used in fitting, selection or scoring.
@@ -110,15 +171,18 @@ to use this folder's own data and results.
   the actual 2015-2025 prices is the forecast error of a pre-2015 model. It
   includes avian flu outbreaks *and* other changes (inflation, feed costs,
   cage-free rules).
+- *Note added with the final design:* "cost of the shocks" is only a label. The
+  signed gap changes direction over 2015-2025, so its RMSE measures how far the
+  baseline missed in both directions, not a cost caused by any one shock.
 - **Not claimed:** "this is what prices would have been without the flu". That
   is causal and assumes nothing else changed; the projection is only a baseline
   scenario with a widening interval.
 - Actual post-2014 prices are used only in the gap files and plots, after the
   fact. Fitting, selection and the validation/test scores still end in
   December 2014.
-- Gap results: 6-month RMSE about $0.20-0.27 (models nearly tied, Naive $0.20);
-  12-month $0.40-0.59; full 124 months $0.90-1.04 with every model missing the
-  2022-2025 spikes. Full-period 95% coverage ranges from 58% to 100%.
+- Gap results (dollar models): 6-month RMSE about $0.20-0.26 (models nearly tied,
+  Naive $0.20); 12-month $0.43-0.59; full 124 months $0.92-0.99, with every model
+  missing the 2022-2025 spikes. Full-period 95% coverage ranges from 57% to 80%.
 - Caveats: six months in one calm year is a thin evaluation sample, and pre-2015
   is calmer rather than spike-free. A rolling-origin check was considered and
   skipped as overkill.
@@ -130,8 +194,8 @@ revised study.
 ## Report
 
 The [Google Docs report](https://docs.google.com/document/d/1Ww4--ggtK9WUdG6Yw6T0TQmVG8rBN-eF-vWENc38lqg/edit)
-has been pruned. Use the revised dates and results above for subsequent report
-work, and preserve the user's current report edits. Packaging this folder does
+has been pruned. Use the final two-model design and `results/final_two_models/`
+for subsequent report work, and preserve the user's current report edits. Packaging this folder does
 not change the online report.
 
 ## Work log
@@ -162,3 +226,65 @@ not change the online report.
 - Interpretation: the gap is forecast error of a pre-2015 model. It includes avian
   flu outbreaks and other changes (inflation, feed costs, cage-free rules). It is
   not an estimate of what prices would have been without the flu.
+
+### 23 October 2026 (addition by M4 + Claude: Chronos-2 comparison in `tsfm/`)
+
+- `tsfm/chronos_forecast.py` runs zero-shot Chronos-2 (no fine-tuning, no tuning, dollar prices)
+  on the same origins: Dec 2013 (validation, h=6), Jun 2014 (test, h=6) and Dec 2014
+  (h=124; its first 6 and 12 months are the 6- and 12-month forecasts). Contexts end at
+  each origin; post-2014 prices appear only in the gap table. `tsfm/chronos_plot.py`
+  draws the projection. Outputs are in `tsfm/results/`. The point forecast is the
+  median of its dollar-scale forecast. Chronos also works on dollars, like the R models.
+- Chronos was not part of the validation selection among the nine R models.
+
+### 23 October 2026 (change by M4 + Claude: removed log transform)
+
+- Removed `lambda = 0` and `biasadj` from every R model (`helpers.R`, `forecast.R`)
+  and switched the training ACF/STL exploration and residual diagnostics to
+  dollars. Reason: prices stayed between $0.68 and $2.20 before 2015 and are
+  always positive, and one scale for all nine models makes the comparison
+  like-for-like (Naive was already on dollars).
+- Known trade-off: the monthly dollar change sd rose from 0.059 (1980s) to 0.104
+  (2010s) while the log change sd stayed about 0.062, so dollar intervals are too
+  narrow at 2014 price levels.
+- Holt-Winters kept with the default optimiser. An `admissible`-bounds refit fits
+  much better in sample but does not forecast better, so it is only a footnote.
+- Effect: validation selection is still Naive; test ranking changed (Auto ETS now best).
+  Fitted structures changed for ARIMA (1,1,0 instead of 3,1,3 with drift).
+
+### 23 October 2026 (addition by M4 + Claude: one-year test alternative)
+
+- Quick alternative to the 6+6 split: no validation window, a single 12-month test
+  (Jan-Dec 2014) with models fitted through Dec 2013. `analysis/one_year_test.R`
+  (nine R models) and `tsfm/chronos_one_year.py` (Chronos-2) write
+  `results/one_year_test/`. The main 6+6 study is unchanged.
+
+### 23 October 2026 (addition by M4 + Claude: 12-month validation and 12-month test)
+
+- Second alternative design: validation Jan-Dec 2013 (fit through Dec 2012) and
+  test Jan-Dec 2014 (refit through Dec 2013). `analysis/val_test_12m.R` and
+  `tsfm/chronos_val_test_12m.py` write `results/val_test_12m/`. The 6+6 study is unchanged.
+
+### 23 October 2026 (addition by M4 + Claude: final two-model design)
+
+- Team decision: two models only (Damped Holt, Seasonal ARIMA); no validation
+  set; train Jan 1980-Dec 2013; test Jan-Dec 2014; better model by test RMSE
+  with a stated tie rule; refit through Dec 2014; forecast 6, 12 and 180 months;
+  post-hoc gap scored on the 124 months with actuals. Chronos, the other seven
+  models and the 6+6 split are not part of this design.
+- New `analysis/final_two_models.R` writes `results/final_two_models/`. Nothing
+  else in the folder was changed: `forecast.R`, `helpers.R` and all older
+  results were left as they were.
+- Result: Seasonal ARIMA chosen (2014 test RMSE 0.0721 against 0.0753). Gap RMSE
+  0.204 over 6 months, 0.475 over 12 and 0.974 over 124. These are the same
+  numbers as the "Seasonal ARIMA search" rows of `results/gap_vs_actual_summary.csv`.
+- Points to know (details in `GUIDE_FOR_REPORT_AND_SLIDES.md`):
+  - The pair was picked after nine-model 2014 results had been seen.
+  - The 2013 check ranks the two models the same way as 2014; the ranking flip
+    is between the two halves of 2014.
+  - Damped Holt's beta is at its lower bound, so it behaves like simple
+    exponential smoothing.
+  - Both models fail Ljung-Box at 5%.
+  - The 95% lower bound goes below $0 from Feb 2027 (unscored months only).
+  - Seasonal ARIMA is not in the PDF's example list of methods.
+- Added `GUIDE_FOR_REPORT_AND_SLIDES.md` (hints only; no report or slide text).

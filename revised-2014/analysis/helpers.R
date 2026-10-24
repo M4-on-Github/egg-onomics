@@ -63,25 +63,23 @@ figure <- function(name, draw, height = 1000L, width = 1600L) {
   draw()
 }
 
-# Smoothing models use additive errors on log prices (lambda = 0).
-# Bias adjustment returns approximate dollar-scale means rather than medians.
+# All models work on original dollar prices (no log transform, no bias adjustment).
 # Baselines use original dollar prices. All accuracy scores are in dollars.
 fit_one <- function(y, method, h = H) {
   if (method == "Naive") return(forecast::naive(y, h = h, level = LEVELS))
   if (method == "Seasonal naive") return(forecast::snaive(y, h = h, level = LEVELS))
   switch(method,
-    "SES" = forecast::ets(y, model = "ANN", damped = FALSE, lambda = 0, biasadj = TRUE),
-    "Holt" = forecast::ets(y, model = "AAN", damped = FALSE, lambda = 0, biasadj = TRUE),
-    "Damped Holt" = forecast::ets(y, model = "AAN", damped = TRUE, lambda = 0, biasadj = TRUE),
-    "Holt-Winters" = forecast::ets(y, model = "AAA", damped = FALSE, lambda = 0, biasadj = TRUE),
-    "Auto ETS" = forecast::ets(y, model = "ZZZ", additive.only = TRUE,
-                                lambda = 0, biasadj = TRUE),
+    "SES" = forecast::ets(y, model = "ANN", damped = FALSE),
+    "Holt" = forecast::ets(y, model = "AAN", damped = FALSE),
+    "Damped Holt" = forecast::ets(y, model = "AAN", damped = TRUE),
+    "Holt-Winters" = forecast::ets(y, model = "AAA", damped = FALSE),
+    "Auto ETS" = forecast::ets(y, model = "ZZZ", additive.only = TRUE),
     stop("Unknown method: ", method, call. = FALSE))
 }
 
 predict_one <- function(fit, h = H) {
   if (inherits(fit, "forecast")) fit else {
-    forecast::forecast(fit, h = h, level = LEVELS, biasadj = TRUE)
+    forecast::forecast(fit, h = h, level = LEVELS)
   }
 }
 
