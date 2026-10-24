@@ -160,6 +160,56 @@ run_forecast <- function() {
   }
   save_csv(wide, "forecast_means_by_model")
 
+  # ---- Added: 12-month forecast, long projection and gap analysis -------------
+  # Same final models (fit through Dec 2014). Naive/Seasonal naive fix h at fit
+  # time, so they are refitted per horizon. Post-2014 actuals are used only for
+  # the after-the-fact gap table, never for fitting, selection or scoring.
+  H_LONG <- sum(full_data$date > ANALYSIS_END)  # Jan 2015 - Apr 2025 = 124
+  forecast_horizon <- function(h) {
+    dates <- seq(max(d$date), by = "month", length.out = h + 1L)[-1L]
+    do.call(rbind, lapply(ALL_METHODS, function(method) {
+      fc <- if (method %in% c("Naive", "Seasonal naive")) fit_one(fit_history(n), method, h)
+            else predict_one(final_models[[method]], h = h)
+      data.frame(model = method, date = dates, horizon = seq_len(h),
+        mean = as.numeric(fc$mean), lower80 = as.numeric(fc$lower[, "80%"]),
+        upper80 = as.numeric(fc$upper[, "80%"]), lower95 = as.numeric(fc$lower[, "95%"]),
+        upper95 = as.numeric(fc$upper[, "95%"]), row.names = NULL)
+    }))
+  }
+  forecast_12 <- forecast_horizon(12L)
+  projection <- forecast_horizon(H_LONG)
+  stopifnot(nrow(forecast_12) == length(ALL_METHODS) * 12L,
+    nrow(projection) == length(ALL_METHODS) * H_LONG,
+    all(is.finite(as.matrix(projection[, 4:8]))),
+    all(projection$lower95 <= projection$upper95))
+  save_csv(forecast_12, "forecast_12_months_all_models")
+  save_csv(projection, "projection_2015_2025_all_models")
+  gap_of <- function(tab) {
+    g <- merge(tab, full_data[, c("date", "price")], by = "date")
+    g$error <- g$price - g$mean
+    g$pct_error <- 100 * g$error / g$price
+    g$in80 <- g$price >= g$lower80 & g$price <= g$upper80
+    g$in95 <- g$price >= g$lower95 & g$price <= g$upper95
+    g[order(g$model, g$date), ]
+  }
+  gap <- gap_of(projection)
+  gap_summary <- do.call(rbind, lapply(
+    list(`6 months` = 6L, `12 months` = 12L, `Full 2015-2025` = H_LONG), function(k) {
+    z <- gap[gap$horizon <= k, ]
+    do.call(rbind, lapply(ALL_METHODS, function(m) {
+      s <- z[z$model == m, ]
+      data.frame(window = NA, model = m, months = nrow(s), ME = mean(s$error),
+        MAE = mean(abs(s$error)), RMSE = sqrt(mean(s$error^2)),
+        MAPE = mean(abs(s$pct_error)), Coverage80 = mean(s$in80),
+        Coverage95 = mean(s$in95), row.names = NULL)
+    }))
+  }))
+  gap_summary$window <- rep(c("6 months", "12 months", "Full 2015-2025"), each = length(ALL_METHODS))
+  save_csv(gap, "gap_vs_actual_by_month")
+  save_csv(gap_summary, "gap_vs_actual_summary")
+  cat("\nGAP VS ACTUAL (post-hoc, not used for selection)\n")
+  print(gap_summary, row.names = FALSE)
+
   # ---- Fitted structures and parameter audit --------------------------------
   describe_fit <- function(fit) {
     if (inherits(fit, "Arima")) {
@@ -251,6 +301,30 @@ run_forecast <- function() {
     paste("Six-month test:", date_label(d$date[test_id])), test_id))
   figure("03_future_all", function() draw_all(final, n,
     paste("All nine models:", date_label(future))))
+  # Added: long projection vs actual prices (post-hoc gap, not a no-outbreak claim).
+  draw_gap <- function(method, heading) {
+    p <- projection[projection$model == method, ]
+    actual <- full_data[full_data$date > ANALYSIS_END, ]
+    past <- d[d$date >= as.Date("2005-01-01"), ]
+    plot(c(past$date, p$date), c(past$price, rep(NA_real_, nrow(p))), type = "n",
+      ylim = range(past$price, actual$price, p$lower95, p$upper95),
+      xlab = "Month", ylab = "U.S. dollars per dozen", main = heading)
+    polygon(c(p$date, rev(p$date)), c(p$lower95, rev(p$upper95)), col = BAND_95, border = NA)
+    polygon(c(p$date, rev(p$date)), c(p$lower80, rev(p$upper80)), col = BAND_80, border = NA)
+    lines(past$date, past$price, col = HISTORY_COLOR, lwd = 2)
+    lines(p$date, p$mean, col = "#2563eb", lwd = 2.5)
+    lines(actual$date, actual$price, col = "#b45309", lwd = 2)
+    abline(v = ANALYSIS_END, col = "#64748b", lty = 2)
+    legend("topleft", c("History to Dec 2014", "Projection mean", "80% interval",
+      "95% interval", "Actual (not used in fitting)"),
+      col = c(HISTORY_COLOR, "#2563eb", BAND_80, BAND_95, "#b45309"),
+      lwd = c(2, 2.5, 8, 8, 2), bty = "n", cex = .8)
+  }
+  figure("05_projection_selected", function() draw_gap(selected,
+    paste0("Projection from Jan 2015 vs actual: ", selected,
+      " (gap includes outbreaks and other post-2014 changes)")))
+  figure("06_projection_naive", function() draw_gap("Naive",
+    "Projection from Jan 2015 vs actual: Naive"))
   figure("04_accuracy_comparison", function() {
     par(mfrow = c(1, 2), mar = c(10, 5, 4, 1))
     for (stage in c("Validation", "Test")) {

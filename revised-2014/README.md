@@ -76,6 +76,10 @@ to use this folder's own data and results.
 | `results/validation_accuracy.csv`, `results/test_accuracy.csv` | Current model comparisons |
 | `results/evaluation_predictions.csv` | 108 predictions: nine models, two six-month windows |
 | `results/forecast_6_months_all_models.csv` | January-June 2015 projections and intervals |
+| `results/forecast_12_months_all_models.csv` | January-December 2015 projections and intervals (added) |
+| `results/projection_2015_2025_all_models.csv` | 124-month projection, January 2015-April 2025 (added) |
+| `results/gap_vs_actual_by_month.csv`, `results/gap_vs_actual_summary.csv` | Post-hoc projection-vs-actual gap, by month and summarised over 6 months, 12 months and the full period (added) |
+| `results/figures/05_projection_selected.png`, `06_projection_naive.png` | Long projection vs actual prices (added) |
 | `results/fitted_models.rds` | Saved models |
 | `results/session_info.txt` | R and package versions from the last full run |
 | `MANIFEST.csv` | SHA-256 hashes and sizes of the packaged files |
@@ -97,6 +101,27 @@ to use this folder's own data and results.
 - Packaging checks passed: a complete run from the new folder, a detached
   plot-only run outside the old repository, and validation of source hashes,
   split dates, prediction counts and plot references.
+
+### Claims and gap analysis (added)
+
+- **Claim 1, stable-regime study:** how well standard methods do when fitted and
+  scored on the calmer pre-2015 regime only.
+- **Claim 3, cost of the shocks:** the gap between the pre-2015 projections and
+  the actual 2015-2025 prices is the forecast error of a pre-2015 model. It
+  includes avian flu outbreaks *and* other changes (inflation, feed costs,
+  cage-free rules).
+- **Not claimed:** "this is what prices would have been without the flu". That
+  is causal and assumes nothing else changed; the projection is only a baseline
+  scenario with a widening interval.
+- Actual post-2014 prices are used only in the gap files and plots, after the
+  fact. Fitting, selection and the validation/test scores still end in
+  December 2014.
+- Gap results: 6-month RMSE about $0.20-0.27 (models nearly tied, Naive $0.20);
+  12-month $0.40-0.59; full 124 months $0.90-1.04 with every model missing the
+  2022-2025 spikes. Full-period 95% coverage ranges from 58% to 100%.
+- Caveats: six months in one calm year is a thin evaluation sample, and pre-2015
+  is calmer rather than spike-free. A rolling-origin check was considered and
+  skipped as overkill.
 
 The earlier neural-network, foundation-model and outbreak-comparison experiments
 are outside this folder. Their settings, dates and scores do not describe this
@@ -121,3 +146,19 @@ not change the online report.
 - Re-ran all nine R methods for the revised six-month windows.
 - Packaged the current code, input and results in this self-contained folder.
   This README is now the main project note for further work.
+
+### 23 October 2026 (addition by M4 + Claude: longer horizons and gap analysis)
+
+- Added to `analysis/forecast.R`, after the six-month forecast: a 12-month
+  forecast (Jan-Dec 2015) and a long projection (Jan 2015-Apr 2025, 124 months)
+  for all nine models, refit-free except Naive/Seasonal naive, whose horizon is
+  fixed at fit time. Splits, models, selection and the six-month results are unchanged.
+- New files: `forecast_12_months_all_models.csv`, `projection_2015_2025_all_models.csv`,
+  `gap_vs_actual_by_month.csv`, `gap_vs_actual_summary.csv`,
+  `figures/05_projection_selected.png`, `figures/06_projection_naive.png`.
+- Gap analysis compares each projection with the actual post-2014 prices
+  (error, % error, 80%/95% coverage; 6 months, 12 months, full period). Actuals are
+  used only for this after-the-fact comparison, never for fitting, selection or scoring.
+- Interpretation: the gap is forecast error of a pre-2015 model. It includes avian
+  flu outbreaks and other changes (inflation, feed costs, cage-free rules). It is
+  not an estimate of what prices would have been without the flu.

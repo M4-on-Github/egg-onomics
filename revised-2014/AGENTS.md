@@ -8,3 +8,9 @@
 - Preserve the full source data and the single full-history graph with cut lines.
 - When preparing a new distribution, refresh `MANIFEST.csv` after changes. Its
   hashes cover every packaged file except the manifest itself.
+- Post-2014 actual prices may be used only in the post-hoc gap outputs
+  (`gap_vs_actual_*`, projection plots). Never use them for fitting, model
+  selection or validation/test scoring.
+- Frame the gap as forecast error of a pre-2015 model (outbreaks plus other
+  changes), not as a causal "prices without the flu" estimate.
+- The report and slides must be written by the team, not by AI.
