@@ -91,12 +91,15 @@ run_final_two_models <- function() {
       unname(tools::md5sum(INPUT))))
   save_csv(data_check, "data_check")
 
+  month_label <- function(dates) paste(format(min(dates), "%b %Y"), "to", format(max(dates), "%b %Y"))
+
   # ---- Task 2: exploration (training data only, Jan 1980-Dec 2013) ------------------
   # One full-history plot keeps the later prices visible for context, with the cuts marked.
   test_start <- as.Date("2014-01-01")
   posthoc_start <- as.Date("2015-01-01")
   figure("01_history_with_cuts", function() {
-    plot(full$date, full$price, type = "n", xlab = "Month", ylab = "U.S. dollars per dozen")
+    plot(full$date, full$price, type = "n", xlab = "Month", ylab = "U.S. dollars per dozen",
+      main = "Egg price, Jan 1980-Apr 2025")
     lines(full$date, full$price, col = HISTORY_COLOR, lwd = 2)
     abline(v = c(test_start, posthoc_start), col = c("#0f766e", "#dc2626"), lty = c(3, 4), lwd = 2)
     legend("topleft", c("Observed price", "Jan 2014", "Jan 2015"), col = c(HISTORY_COLOR, "#0f766e", "#dc2626"),
@@ -121,7 +124,7 @@ run_final_two_models <- function() {
   # A periodic seasonal is identical every year; training starts in January.
   seasonal_by_month <- setNames(as.numeric(parts[1:12, "seasonal"]), month.abb)
   figure("03_stl_decomposition", function() {
-    par(mfrow = c(4, 1), mar = c(2, 5, 2, 1), oma = c(3, 0, 0, 0))
+    par(mfrow = c(4, 1), mar = c(2, 5, 2, 1), oma = c(3, 0, 2, 0))
     plot(train_dates, as.numeric(train_y), type = "l", col = HISTORY_COLOR, lwd = 1.5,
       xlab = "", ylab = "Price ($/dozen)", main = "Observed price")
     plot(train_dates, as.numeric(parts[, "trend"]), type = "l", col = "#2563eb", lwd = 2,
@@ -133,20 +136,22 @@ run_final_two_models <- function() {
       xlab = "", ylab = "Remainder ($/dozen)", main = "Remainder")
     abline(h = 0)
     mtext("Month", side = 1, outer = TRUE, line = 1.2, col = HISTORY_COLOR)
+    mtext("STL decomposition", side = 3, outer = TRUE, line = .5, font = 2, col = HISTORY_COLOR)
   }, height = 1500L)
   figure("04_seasonal_by_month", function() {
-    par(mfrow = c(1, 2), mar = c(4.5, 5, 1, 1))
+    par(mfrow = c(1, 2), mar = c(4.5, 5, 3, 1))
     # monthplot() mishandles col/main passed through `...`; set the line color with par()
     # and add the titles separately.
     par(col = HISTORY_COLOR)
     monthplot(train_y, labels = month.abb, ylab = "U.S. dollars per dozen",
       col.base = ACTUAL_COLOR, lwd.base = 2)
     par(col = "#334155")
-    title(xlab = "Calendar month")
+    title(main = "Price by calendar month", xlab = "Calendar month")
     bars <- barplot(100 * seasonal_by_month, names.arg = month.abb, border = NA, las = 2,
       col = ifelse(seasonal_by_month >= 0, BAND_80, "#fdba74"),
       ylim = 100 * range(seasonal_by_month) * 1.25, xlab = "Calendar month",
-      ylab = "Seasonal effect (cents per dozen)")
+      ylab = "Seasonal effect (cents per dozen)",
+      main = "Seasonal effect by month")
     abline(h = 0, col = "#334155")
     text(bars, 100 * seasonal_by_month, sprintf("%.1f", 100 * seasonal_by_month),
       pos = ifelse(seasonal_by_month >= 0, 3, 1), cex = .7)
@@ -340,7 +345,7 @@ run_final_two_models <- function() {
   # ---- Task 3: test-forecast plots, one per model --------------------------------------
   # Fan chart: history, forecast mean, 80%/95% bands joined to the last observed month,
   # and optional actuals drawn after the forecast origin.
-  draw_fan <- function(fc, origin_n, h, color, label, history_from,
+  draw_fan <- function(fc, origin_n, h, color, label, heading, history_from,
                        actual = NULL, unscored_from = NULL) {
     dates <- seq(model_data$date[origin_n], by = "month", length.out = h + 1L)[-1L]
     past <- which(model_data$date >= as.Date(history_from) & seq_len(nrow(model_data)) <= origin_n)
@@ -354,7 +359,7 @@ run_final_two_models <- function() {
     y_range <- range(model_data$price[past], lo95, hi95, actual$price)
     y_range[2] <- y_range[2] + .12 * diff(y_range)   # room for the legend
     plot(range(model_data$date[past], dates), y_range, type = "n", xlab = "Month",
-      ylab = "U.S. dollars per dozen")
+      ylab = "U.S. dollars per dozen", main = heading)
     if (!is.null(unscored_from)) {
       u <- par("usr")
       rect(unscored_from, u[3], u[2], u[4], col = "#f1f5f9", border = NA)
@@ -380,20 +385,20 @@ run_final_two_models <- function() {
   for (m in MODELS) {
     figure(paste0("06_test_forecast_", slug(m)), function() {
       draw_fan(test_fc[[m]], N_TRAIN, N_TEST, MODEL_COLORS[m], paste(m, "forecast"),
-        "2011-01-01", test_actual_df)
+        paste(m, "test forecast, 2014"), "2011-01-01", test_actual_df)
     })
   }
 
   # ---- Task 4: comparison figures -----------------------------------------------------
   figure("07_test_comparison", function() {
     layout(matrix(1:2, 2), heights = c(3, 2))
-    par(mar = c(2.5, 5, 1, 1))
+    par(mar = c(2.5, 5, 3, 1))
     past <- which(model_data$date >= as.Date("2013-01-01") & seq_len(nrow(model_data)) <= N_TRAIN)
     origin <- model_data$date[N_TRAIN]
     y_range <- range(model_data$price[c(past, test_id)], sapply(test_fc, function(fc) as.numeric(fc$mean)))
     y_range[2] <- y_range[2] + .1 * diff(y_range)
     plot(range(model_data$date[past], test_dates), y_range, type = "n", xlab = "",
-      ylab = "U.S. dollars per dozen")
+      ylab = "U.S. dollars per dozen", main = "Forecasts and actual prices, 2014")
     lines(model_data$date[c(past, test_id)], model_data$price[c(past, test_id)], col = HISTORY_COLOR, lwd = 2)
     points(test_dates, test_actual, pch = 16, col = HISTORY_COLOR)
     abline(v = origin, col = "#64748b", lty = 2)
@@ -404,10 +409,10 @@ run_final_two_models <- function() {
     legend("topleft", c("Observed", paste(MODELS, "forecast")),
       col = c(HISTORY_COLOR, MODEL_COLORS[MODELS]), lty = c(1, MODEL_LTY[MODELS]), lwd = 2.5,
       bg = "white", box.col = "white", inset = .01, cex = .8, ncol = 3)
-    par(mar = c(4.5, 5, 1, 1))
+    par(mar = c(4.5, 5, 3, 1))
     err <- sapply(MODELS, function(m) test_predictions$error[test_predictions$model == m])
     plot(range(test_dates), range(err, 0), type = "n", xlab = "Month",
-      ylab = "Actual minus forecast ($)")
+      ylab = "Actual minus forecast ($)", main = "Forecast error, 2014")
     abline(h = 0, col = "#334155")
     for (m in MODELS) {
       lines(test_dates, err[, m], col = MODEL_COLORS[m], lwd = 2, lty = MODEL_LTY[m])
@@ -506,12 +511,13 @@ run_final_two_models <- function() {
     shown <- rows[rows$scored, c("date", "actual_posthoc")]
     names(shown) <- c("date", "price")
     unscored <- if (p$h > n_scored) fc_dates[n_scored + 1L] else NULL
+    heading <- paste0(better, " forecast, ", month_label(rows$date))
     figure(paste0(p$name, "_clean"), function() {
-      draw_fan(fc_long, nrow(model_data), p$h, MODEL_COLORS[better], paste(better, "forecast"), p$from)
+      draw_fan(fc_long, nrow(model_data), p$h, MODEL_COLORS[better], paste(better, "forecast"), heading, p$from)
     })
     figure(p$name, function() {
       draw_fan(fc_long, nrow(model_data), p$h, MODEL_COLORS[better], paste(better, "forecast"),
-        p$from, shown, unscored)
+        heading, p$from, shown, unscored)
     })
   }
   figure("12_gap_by_year", function() {
@@ -520,7 +526,8 @@ run_final_two_models <- function() {
       paste0(gap_by_year$year, "*"), gap_by_year$year), border = NA,
       col = ifelse(gap_by_year$ME >= 0, ACTUAL_COLOR, "#2563eb"),
       ylim = range(0, gap_by_year$ME) + c(-.1, .1) * gap_span, xlab = "Calendar year (* = Jan-Apr only)",
-      ylab = "Mean actual minus forecast ($/dozen)")
+      ylab = "Mean actual minus forecast ($/dozen)",
+      main = "Actual minus forecast by year")
     abline(h = 0, col = "#334155")
     text(bars, gap_by_year$ME, sprintf("%.2f", gap_by_year$ME), pos = ifelse(gap_by_year$ME >= 0, 3, 1), cex = .75)
     legend("topleft", c("Actual above forecast", "Actual below forecast"),
