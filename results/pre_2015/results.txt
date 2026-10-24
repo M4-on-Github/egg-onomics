@@ -1,0 +1,77 @@
+2014 SIX-MONTH FORECAST EXPERIMENT: ALL NINE MODELS
+
+      split      start        end calendar_months observed_months
+   Training 1980-01-01 2013-12-01             408             408
+ Validation 2014-01-01 2014-06-01               6               6
+       Test 2014-07-01 2014-12-01               6               6
+
+VALIDATION ACCURACY
+                 model           ME        MAE       RMSE     MAPE      MASE
+                 Naive -0.004333333 0.04700000 0.05472050 2.315333 0.3511168
+                 ARIMA  0.009276785 0.04331815 0.05472078 2.117046 0.3236113
+           Damped Holt -0.002363105 0.04633933 0.05593543 2.282731 0.3461812
+                   SES -0.002709111 0.04645859 0.05594478 2.288997 0.3470722
+                  Holt -0.014524022 0.05041108 0.05970828 2.500153 0.3765996
+ Seasonal ARIMA search  0.045899999 0.04723744 0.06617932 2.283402 0.3528906
+        Seasonal naive  0.110000000 0.11000000 0.12207102 5.392078 0.8217628
+              Auto ETS  0.090046922 0.10538580 0.12457872 5.212360 0.7872921
+          Holt-Winters  0.084168223 0.11942809 0.13508238 5.922220 0.8921959
+ Coverage80 Coverage95 observed_months horizon_months
+          1          1               6              6
+          1          1               6              6
+          1          1               6              6
+          1          1               6              6
+          1          1               6              6
+          1          1               6              6
+          1          1               6              6
+          1          1               6              6
+          1          1               6              6
+
+Selected by validation RMSE: Naive 
+
+TEST ACCURACY
+                 model          ME        MAE       RMSE     MAPE      MASE
+ Seasonal ARIMA search -0.01731786 0.05680197 0.07019212 2.777652 0.4254750
+                  Holt  0.03434995 0.05257145 0.08935849 2.467211 0.3937863
+          Holt-Winters -0.07745685 0.08735669 0.09731977 4.359948 0.6543450
+                 ARIMA  0.05148613 0.05650292 0.09973626 2.636954 0.4232350
+           Damped Holt  0.04895752 0.05765088 0.10032544 2.694825 0.4318337
+                   SES  0.04907118 0.05769279 0.10038968 2.696776 0.4321477
+              Auto ETS -0.09426412 0.09426412 0.10704491 4.743874 0.7060851
+                 Naive  0.06733333 0.06733333 0.11340047 3.154765 0.5043601
+        Seasonal naive  0.10800000 0.10800000 0.11893976 5.292431 0.8089737
+ Coverage80 Coverage95 observed_months horizon_months
+  1.0000000          1               6              6
+  1.0000000          1               6              6
+  1.0000000          1               6              6
+  1.0000000          1               6              6
+  1.0000000          1               6              6
+  1.0000000          1               6              6
+  1.0000000          1               6              6
+  0.8333333          1               6              6
+  1.0000000          1               6              6
+
+SIX-MONTH HISTORICAL FORECAST MEANS
+                 model Jan_2015 Feb_2015 Mar_2015 Apr_2015 May_2015 Jun_2015
+                   SES 2.190377 2.193527 2.196677 2.199827 2.202977 2.206127
+                  Holt 2.194924 2.203110 2.211323 2.219562 2.227829 2.236123
+           Damped Holt 2.190506 2.193712 2.196917 2.200121 2.203324 2.206527
+          Holt-Winters 2.204127 2.180042 2.152781 2.152599 1.992385 1.967912
+              Auto ETS 2.183980 2.113273 2.097274 2.083300 1.938414 1.902417
+                 Naive 2.210000 2.210000 2.210000 2.210000 2.210000 2.210000
+        Seasonal naive 2.008000 1.998000 2.061000 2.119000 1.996000 1.948000
+                 ARIMA 2.191648 2.191463 2.170858 2.172793 2.161517 2.156155
+ Seasonal ARIMA search 2.159791 2.174228 2.179398 2.193217 2.154852 2.143101
+
+DATA QUALITY
+ observations first_date  last_date missing_months missing_prices
+          420 1980-01-01 2014-12-01              0              0
+ duplicate_dates imputed_values source_observations source_last_date
+               0              0                 544       2025-04-01
+ excluded_after_cutoff                       source_md5
+                   124 bf246189cbf9d52a5da338e57f838d30
+
+Six observations per evaluation window. All fitting and scoring data ends in December 2014.
+The full 1980-April 2025 graph is context only. Post-2014 actuals are not used.
+The January 2015 boundary is a study choice, not an estimated shock date.
+Original complete snapshot only. No missing or imputed prices.

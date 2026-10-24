@@ -1,5 +1,17 @@
 # Report writing guide
 
+## Current data split (revised)
+
+Use `results/pre_2015/` for the current R study. Training is January 1980-December
+2013 (408 months), validation is January-June 2014 (6 months), and testing is
+July-December 2014 (6 months). All later actuals are excluded from modeling and
+scoring. `figures/00_history.png` retains the full 1980-April 2025 history with
+vertical lines at January 2014, July 2014 and January 2015. There is no separate
+zoomed split graph. The future-forecast table is `forecast_6_months_all_models.csv`.
+
+The older writing guide below describes the previous experiment and is retained
+as reference; its evaluation dates and scores do not describe the revised study.
+
 Use the current `results/` folder. The previous annual report draft is archived
 in `junk/previous-work/report/`; its numerical comparisons are not the current
 three-month analysis.

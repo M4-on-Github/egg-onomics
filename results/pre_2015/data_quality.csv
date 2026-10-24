@@ -1,0 +1,2 @@
+"observations","first_date","last_date","missing_months","missing_prices","duplicate_dates","imputed_values","source_observations","source_last_date","excluded_after_cutoff","source_md5"
+420,1980-01-01,2014-12-01,0,0,0,0,544,2025-04-01,124,"bf246189cbf9d52a5da338e57f838d30"

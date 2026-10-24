@@ -101,3 +101,29 @@ draw_acf <- function(y, heading, max_lag = 36L, color = "#2563eb") {
       col = color, lwd = 2)
 }
 
+# Keep all source observations visible, with the modeling cuts on the same graph.
+draw_data_split <- function(data, splits, cutoff) {
+  validation_start <- splits$start[splits$split == "Validation"]
+  test_start <- splits$start[splits$split == "Test"]
+  excluded_start <- seq(cutoff, by = "month", length.out = 2L)[2L]
+  plot(data$date, data$price, type = "n", xlab = "Month",
+    ylab = "U.S. dollars per dozen", main = "Full egg-price history with data cuts: 1980-2025")
+  limits <- par("usr")
+  rect(validation_start, limits[3], test_start, limits[4], col = "#dbeafe", border = NA)
+  rect(test_start, limits[3], excluded_start, limits[4], col = "#ccfbf1", border = NA)
+  rect(excluded_start, limits[3], limits[2], limits[4], col = "#f1f5f9", border = NA)
+  lines(data$date, data$price, col = HISTORY_COLOR, lwd = 2)
+  abline(v = c(validation_start, test_start, excluded_start),
+    col = c("#2563eb", "#0f766e", "#dc2626"), lty = c(2, 3, 4), lwd = 2)
+  legend("topleft", c("Observed price (full history)",
+    paste("Validation starts:", format(validation_start, "%b %Y")),
+    paste("Test starts:", format(test_start, "%b %Y")),
+    paste("Excluded from analysis:", format(excluded_start, "%b %Y"), "onward")),
+    col = c(HISTORY_COLOR, "#2563eb", "#0f766e", "#dc2626"),
+    lty = c(1, 2, 3, 4), lwd = 2, bty = "n", cex = .85)
+  mtext(paste0("Training: ", format(splits$start[1], "%b %Y"), "-",
+    format(splits$end[1], "%b %Y"), " | Validation: ", format(validation_start, "%b %Y"), "-",
+    format(splits$end[2], "%b %Y"), " | Test: ", format(test_start, "%b %Y"), "-",
+    format(cutoff, "%b %Y")), side = 3, line = .35, cex = .8)
+}
+

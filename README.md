@@ -1,9 +1,22 @@
 # Egg onomics
 
-Forecast monthly U.S. egg prices using the original complete dataset through
-April 2025. The active workflow compares all nine models over three-month
-validation, test and forecast windows. It uses no 2026 observations, missing-value
-fills or interpolation.
+## Current working folder
+
+Continue the revised study in **[revised-2014/](revised-2014/README.md)**.
+Its README is the main Markdown file to keep updated. That folder contains the
+current R code, original input, RStudio project and results in one portable place.
+Open `revised-2014/egg-onomics.Rproj` to work on it.
+
+The layout described below is retained as an earlier project snapshot. Use the
+commands and result paths in the new folder's README for current work.
+
+## Earlier project layout
+
+The active workflow trains on January 1980-December 2013, validates on
+January-June 2014, and tests on July-December 2014. All nine models use six-month
+windows. Observations after December 2014 are excluded from modeling and scoring.
+One full 1980-April 2025 history graph keeps all source observations visible and
+marks the three data cuts with vertical lines. The original data file is unchanged.
 
 ## Start here
 
@@ -20,22 +33,28 @@ fills or interpolation.
    source("analysis/forecast.R")
    ```
 
-4. Open `results/index.html` for the charts and tables, or `results/results.txt`
+4. Open `results/pre_2015/index.html` for the charts and tables, or `results/pre_2015/results.txt`
    for the plain-text summary.
 
 Command line: `Rscript analysis/forecast.R`. RStudio Source also works when the
 working directory is `analysis/`. `EGG_FORECAST_OUTPUT` optionally changes the
 output directory.
 
+To regenerate only the full-history graph and split metadata, set
+`Sys.setenv(EGG_PLOTS_ONLY = "1")` before sourcing, then
+`Sys.unsetenv("EGG_PLOTS_ONLY")` afterward. The graph is
+`results/pre_2015/figures/00_history.png`; its cut lines mark January 2014,
+July 2014 and January 2015. Earlier experiment outputs remain separate in `results/`.
+
 ## Folder guide
 
 | Location | Purpose |
 | --- | --- |
 | `data/APU0000708111.csv` | Original unchanged input, January 1980-April 2025 |
-| `analysis/forecast.R` | Main analysis for all nine models and three-month forecasts |
+| `analysis/forecast.R` | Main analysis: six-month validation and test in 2014 |
 | `analysis/helpers.R` | Shared model, scoring and plotting functions and colors |
 | `analysis/viewer.R` | HTML presentation of the current results |
-| `results/` | Current generated charts, tables, fitted models and runtime details |
+| `results/pre_2015/` | Current generated charts, tables, fitted models and runtime details |
 | `report/REPORT_OUTLINE.md` | Writing guide tied to the current analysis |
 | `junk/previous-work/` | Archived experiments, 2026 data, old results and annual report draft |
 
@@ -48,37 +67,43 @@ There are 544 complete observations and no missing months or prices.
 
 | Partition | Dates | Months |
 | --- | --- | ---: |
-| Training | January 1980-October 2024 | 538 |
-| Validation | November 2024-January 2025 | 3 |
-| Test | February-April 2025 | 3 |
-| Historical forecast | May-July 2025 | 3 |
+| Training | January 1980-December 2013 | 408 |
+| Validation | January-June 2014 | 6 |
+| Test | July-December 2014 | 6 |
+| Historical forecast (no actuals used) | January-June 2015 | 6 |
 
 Methods: SES, Holt, Damped Holt, Holt-Winters, automatic ETS, naive, seasonal
 naive, nonseasonal automatic ARIMA and seasonal automatic ARIMA. Smoothing and
 ARIMA models fit log prices and return bias-adjusted dollar-scale means.
 Benchmarks operate on original dollar prices. Validation RMSE selects the method
 before the final-test scores are calculated. Every method is also refitted to
-all 544 observations to produce its own three-month forecast.
+all 420 observations through December 2014 to produce its own six-month forecast.
 
-The seasonal period remains 12 months even though the forecast horizon is three
-months. The final test contains the 2025 price spike. With only three outcomes,
-accuracy and interval coverage are sensitive to the chosen period. Historical
-forecasts from April 2025 should not be described as current forecasts.
+The seasonal period remains 12 months even though the forecast horizon is six
+months. Both evaluation windows are entirely in 2014. The January 2015 cutoff
+is the chosen study boundary. All later actual prices remain visible only in
+the full-history graph; they do not enter fitting, model selection or scoring.
 
 ## Useful output files
 
-- `results/data_quality.csv` and `data_splits.csv`: source hash, completeness and dates.
-- `results/validation_accuracy.csv` and `test_accuracy.csv`: all nine comparisons.
-- `results/forecast_means_by_model.csv`: compact forecast table for May-July 2025.
-- `results/forecast_3_months_all_models.csv`: all 27 means with 80% and 95% prediction intervals.
-- `results/evaluation_predictions.csv`: all 54 validation and test predictions.
-- `results/model_structures.csv`, `model_parameters.csv` and `residual_diagnostics.csv`: model audit.
-- `results/figures/`: history, ACF, STL, residual checks and individual model forecasts.
-- `results/individual_plot_manifest.csv`: all 36 individual graphs, ordered by
+These current files are under `results/pre_2015/`:
+
+- `data_quality.csv` and `data_splits.csv`: source hash, completeness and dates.
+- `validation_accuracy.csv` and `test_accuracy.csv`: all nine comparisons.
+- `forecast_means_by_model.csv`: compact forecast table for January-June 2015.
+- `forecast_6_months_all_models.csv`: all 54 means with 80% and 95% prediction intervals.
+- `evaluation_predictions.csv`: all 108 validation and test predictions.
+- `model_structures.csv`, `model_parameters.csv` and `residual_diagnostics.csv`: model audit.
+- `figures/00_history.png`: one full-history graph with the three data cuts.
+- `monthly_calendar.csv`: 420 modeling observations; `full_monthly_calendar.csv`: all 544 for context.
+- `individual_plot_manifest.csv`: all 36 individual graphs, ordered by
   method and stage for the report appendix. Each method has a validation plot,
   test plot, historical future forecast and training residual diagnostic panel.
 
 ## Gradient descent notebook
+
+The notebooks and pre-spike study below retain the earlier experimental designs.
+They have not been changed to the new 2014 validation/test split.
 
 Open `analysis/gradient_descent.ipynb` in Jupyter or VS Code with a Python 3
 kernel. It contains executed outputs, a NumPy implementation of gradient

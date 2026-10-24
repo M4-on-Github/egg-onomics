@@ -1,0 +1,4 @@
+"split","start","end","calendar_months","observed_months"
+"Training",1980-01-01,2013-12-01,408,408
+"Validation",2014-01-01,2014-06-01,6,6
+"Test",2014-07-01,2014-12-01,6,6

@@ -1,5 +1,5 @@
-# Three-month validation, testing and future forecasts for all nine models.
-# Original complete monthly data through April 2025. No filling or test-based retuning.
+# Six-month validation and testing in 2014, with all nine models.
+# Model data ends in December 2014; the full 1980-2025 plot remains available.
 
 run_forecast <- function() {
   # ---- Load the same reusable settings and modeling functions ----------------
@@ -26,12 +26,13 @@ run_forecast <- function() {
       Sys.setenv(EGG_FORECAST_OUTPUT = old_out)
     }
   }, add = TRUE)
-  out <- Sys.getenv("EGG_FORECAST_OUTPUT", unset = file.path(root, "results"))
+  out <- Sys.getenv("EGG_FORECAST_OUTPUT", unset = file.path(root, "results", "pre_2015"))
   Sys.setenv(EGG_FORECAST_OUTPUT = out)
   source(file.path(root, "analysis", "helpers.R"), local = TRUE)
-  H <- 3L
-  N_VALIDATION <- 3L
-  N_TEST <- 3L
+  H <- 6L
+  N_VALIDATION <- 6L
+  N_TEST <- 6L
+  ANALYSIS_END <- as.Date("2014-12-01")
   ARIMA_METHODS <- c("ARIMA", "Seasonal ARIMA search")
   ALL_METHODS <- c(METHODS, ARIMA_METHODS)
   COLORS <- c(COLORS, "ARIMA" = "#0891b2", "Seasonal ARIMA search" = "#65a30d")
@@ -45,6 +46,10 @@ run_forecast <- function() {
     min(d$date) == as.Date("1980-01-01"), max(d$date) == as.Date("2025-04-01"),
     identical(d$date, seq(min(d$date), max(d$date), by = "month")))
   d$observed <- TRUE
+  full_data <- d
+  # Keep later observations for the full-history graph only. Every fit,
+  # selection score, diagnostic and evaluation below uses the truncated data.
+  d <- full_data[full_data$date <= ANALYSIS_END, ]
   n <- nrow(d)
   train_n <- n - N_VALIDATION - N_TEST
   dev_n <- n - N_TEST
@@ -55,16 +60,30 @@ run_forecast <- function() {
     start = d$date[c(1, train_n + 1L, dev_n + 1L)], end = d$date[c(train_n, dev_n, n)],
     calendar_months = c(train_n, N_VALIDATION, N_TEST),
     observed_months = c(train_n, N_VALIDATION, N_TEST))
+  stopifnot(n == 420L, train_n == 408L, dev_n == 414L,
+    identical(d$date[val_id], seq(as.Date("2014-01-01"), as.Date("2014-06-01"), by = "month")),
+    identical(d$date[test_id], seq(as.Date("2014-07-01"), as.Date("2014-12-01"), by = "month")))
   data_quality <- data.frame(observations = n, first_date = min(d$date), last_date = max(d$date),
     missing_months = 0, missing_prices = 0, duplicate_dates = 0, imputed_values = 0,
+    source_observations = nrow(full_data), source_last_date = max(full_data$date),
+    excluded_after_cutoff = sum(full_data$date > ANALYSIS_END),
     source_md5 = unname(tools::md5sum(INPUT)))
   save_csv(splits, "data_splits")
   save_csv(data_quality, "data_quality")
   save_csv(d, "monthly_calendar")
+  save_csv(full_data, "full_monthly_calendar")
+  save_csv(data.frame(boundary = c("Validation begins", "Test begins", "Excluded data begins"),
+    date = c(min(d$date[val_id]), min(d$date[test_id]), as.Date("2015-01-01"))), "plot_cut_dates")
+  # One full-history graph contains all three cut lines; no separate zoom.
+  figure("00_history", function() draw_data_split(full_data, splits, ANALYSIS_END))
+  if (Sys.getenv("EGG_PLOTS_ONLY", "0") == "1") {
+    cat("Saved full-history graph with 2014 cut lines to", FIG, "\n")
+    return(invisible(splits))
+  }
   fit_history <- function(end) ts(as.numeric(series)[seq_len(end)], start = start(series), frequency = 12)
   date_label <- function(dates) paste(format(min(dates), "%b %Y"), "to", format(max(dates), "%b %Y"))
 
-  # ---- Model fitting: same specifications, now using three-step forecasts ----
+  # ---- Model fitting: six-step forecasts with no post-2014 observations -------
   fit_any <- function(y, method) {
     if (method %in% ARIMA_METHODS) {
       forecast::auto.arima(y, seasonal = method == "Seasonal ARIMA search",
@@ -108,7 +127,7 @@ run_forecast <- function() {
   test_models <- fit_stage(dev_n, paste("test origin", format(d$date[dev_n], "%B %Y")))
   test <- lapply(test_models, predict_one, h = H)
   test_scores <- accuracy(test, test_id, dev_n)
-  # Every method is refitted for its own May-July forecast, not just
+  # Every method is refitted for its own January-June 2015 forecast, not just
   # the validation winner. The winner remains a clearly separate statement.
   final_models <- fit_stage(n, paste("final origin", format(max(d$date), "%B %Y")))
   final <- lapply(final_models, predict_one, h = H)
@@ -126,12 +145,14 @@ run_forecast <- function() {
       upper80 = as.numeric(fc$upper[, "80%"]), lower95 = as.numeric(fc$lower[, "95%"]),
       upper95 = as.numeric(fc$upper[, "95%"]), row.names = NULL)
   }))
-  stopifnot(nrow(forecast_table) == 27L, nrow(evaluation) == 54L,
+  stopifnot(nrow(forecast_table) == length(ALL_METHODS) * H,
+    nrow(evaluation) == length(ALL_METHODS) * (N_VALIDATION + N_TEST),
+    max(evaluation$date) <= ANALYSIS_END,
     all(is.finite(as.matrix(forecast_table[, 4:8]))),
     all(forecast_table$lower95 <= forecast_table$lower80),
     all(forecast_table$lower80 <= forecast_table$upper80),
     all(forecast_table$upper80 <= forecast_table$upper95))
-  save_csv(forecast_table, "forecast_3_months_all_models")
+  save_csv(forecast_table, "forecast_6_months_all_models")
   wide <- data.frame(model = ALL_METHODS)
   for (date in future) {
     z <- forecast_table[forecast_table$date == as.Date(date, origin = "1970-01-01"), ]
@@ -225,9 +246,9 @@ run_forecast <- function() {
       lty = 1, lwd = 2, bty = "n", ncol = 2, cex = .7)
   }
   figure("01_validation_all", function() draw_all(validation, train_n,
-    paste("Three-month validation:", date_label(d$date[val_id])), val_id))
+    paste("Six-month validation:", date_label(d$date[val_id])), val_id))
   figure("02_test_all", function() draw_all(test, dev_n,
-    paste("Three-month test:", date_label(d$date[test_id])), test_id))
+    paste("Six-month test:", date_label(d$date[test_id])), test_id))
   figure("03_future_all", function() draw_all(final, n,
     paste("All nine models:", date_label(future))))
   figure("04_accuracy_comparison", function() {
@@ -236,7 +257,7 @@ run_forecast <- function() {
       z <- if (stage == "Validation") validation_scores else test_scores
       bars <- barplot(z$RMSE, names.arg = z$model, col = COLORS[z$model], las = 2,
         cex.names = .7, ylim = c(0, max(z$RMSE) * 1.2),
-        ylab = "RMSE (U.S. dollars per dozen)", main = paste(stage, "three-month RMSE"))
+        ylab = "RMSE (U.S. dollars per dozen)", main = paste(stage, "six-month RMSE"))
       text(bars, z$RMSE, sprintf("%.3f", z$RMSE), pos = 3, cex = .7)
     }
   })
@@ -251,13 +272,6 @@ run_forecast <- function() {
 
   # ---- Exploration and residual diagnostics for the active report ------------
   training <- fit_history(train_n)
-  figure("00_history", function() {
-    plot(d$date, d$price, type = "l", col = HISTORY_COLOR, lwd = 2,
-      xlab = "Month", ylab = "U.S. dollars per dozen", main = "Original complete egg-price data through April 2025")
-    abline(v = d$date[c(min(val_id), min(test_id))], col = c("#2563eb", "#0f766e"), lty = 2)
-    legend("topleft", c("Observed", "Validation begins", "Test begins"),
-      col = c(HISTORY_COLOR, "#2563eb", "#0f766e"), lty = c(1, 2, 2), bty = "n")
-  })
   figure("00_training_acf", function() {
     par(mfrow = c(1, 2))
     draw_acf(log(training), "Training log-price ACF", 48L)
@@ -317,14 +331,16 @@ run_forecast <- function() {
     final_models = final_models, final = final), file.path(out, "fitted_models.rds"))
   writeLines(trimws(capture.output(sessionInfo()), which = "right"), file.path(out, "session_info.txt"))
   capture.output({
-    cat("THREE-MONTH FORECAST EXPERIMENT: ALL NINE MODELS\n\n")
+    cat("2014 SIX-MONTH FORECAST EXPERIMENT: ALL NINE MODELS\n\n")
     print(splits, row.names = FALSE)
     cat("\nVALIDATION ACCURACY\n"); print(validation_scores, row.names = FALSE)
     cat("\nSelected by validation RMSE:", selected, "\n")
     cat("\nTEST ACCURACY\n"); print(test_scores, row.names = FALSE)
-    cat("\nTHREE-MONTH FUTURE FORECAST MEANS\n"); print(wide, row.names = FALSE)
+    cat("\nSIX-MONTH HISTORICAL FORECAST MEANS\n"); print(wide, row.names = FALSE)
     cat("\nDATA QUALITY\n"); print(data_quality, row.names = FALSE)
-    cat("\nOnly three observations per evaluation window. Periods differ from earlier annual tests.\n")
+    cat("\nSix observations per evaluation window. All fitting and scoring data ends in December 2014.\n")
+    cat("The full 1980-April 2025 graph is context only. Post-2014 actuals are not used.\n")
+    cat("The January 2015 boundary is a study choice, not an estimated shock date.\n")
     cat("Original complete snapshot only. No missing or imputed prices.\n")
   }, file = file.path(out, "results.txt"))
   cat("\nVALIDATION:\n"); print(validation_scores, row.names = FALSE)

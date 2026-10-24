@@ -1,0 +1,154 @@
+"stage","model","parameter","estimate"
+"Training","SES","alpha",0.876621075791831
+"Training","SES","l",-0.143985616235514
+"Training","Holt","alpha",0.87275123980687
+"Training","Holt","beta",0.000100004978479436
+"Training","Holt","l",-0.135985850205599
+"Training","Holt","b",0.00163123710748637
+"Training","Damped Holt","alpha",0.872052253887869
+"Training","Damped Holt","beta",0.000446064423659696
+"Training","Damped Holt","phi",0.800000049399604
+"Training","Damped Holt","l",-0.123773500368653
+"Training","Damped Holt","b",-0.0310217128528592
+"Training","Holt-Winters","alpha",0.533647767493771
+"Training","Holt-Winters","beta",0.000111224511925638
+"Training","Holt-Winters","gamma",0.0422304488617716
+"Training","Holt-Winters","l",-0.306554833288839
+"Training","Holt-Winters","b",0.000250622493712451
+"Training","Holt-Winters","s0",0.0998320123358483
+"Training","Holt-Winters","s1",0.0329722235035326
+"Training","Holt-Winters","s2",-0.0162065057198918
+"Training","Holt-Winters","s3",-0.00136963853933107
+"Training","Holt-Winters","s4",-0.0234163726968608
+"Training","Holt-Winters","s5",-0.0540423919102747
+"Training","Holt-Winters","s6",-0.129753948328905
+"Training","Holt-Winters","s7",-0.0823269779776431
+"Training","Holt-Winters","s8",-0.00885129352057503
+"Training","Holt-Winters","s9",0.0287707933852067
+"Training","Holt-Winters","s10",0.0247911334398944
+"Training","Auto ETS","alpha",0.663605220188518
+"Training","Auto ETS","gamma",0.0338846766136545
+"Training","Auto ETS","l",-0.429490096906901
+"Training","Auto ETS","s0",0.0410955515824091
+"Training","Auto ETS","s1",0.0439611485130715
+"Training","Auto ETS","s2",0.00525776991088906
+"Training","Auto ETS","s3",-0.0278864914306409
+"Training","Auto ETS","s4",-0.0402193424840424
+"Training","Auto ETS","s5",-0.0533876497263325
+"Training","Auto ETS","s6",-0.0743051627945384
+"Training","Auto ETS","s7",-0.064318459682482
+"Training","Auto ETS","s8",0.0170280748544963
+"Training","Auto ETS","s9",0.0344363620776583
+"Training","Auto ETS","s10",0.0463140614514826
+"Training","ARIMA","ar1",-0.723687695782769
+"Training","ARIMA","ar2",0.554629623097558
+"Training","ARIMA","ar3",0.789061309932466
+"Training","ARIMA","ma1",0.574122281106595
+"Training","ARIMA","ma2",-0.648044993063788
+"Training","ARIMA","ma3",-0.823566544290905
+"Training","ARIMA","drift",0.00205436197371908
+"Training","Seasonal ARIMA search","ar1",-0.207694308707798
+"Training","Seasonal ARIMA search","sar1",0.211941387466218
+"Training","Seasonal ARIMA search","sar2",0.234963482427854
+"Test","SES","alpha",0.876833346596048
+"Test","SES","l",-0.144045452139307
+"Test","Holt","alpha",0.877007861893659
+"Test","Holt","beta",0.000100003405187478
+"Test","Holt","l",-0.146235171406002
+"Test","Holt","b",0.00204258234420223
+"Test","Damped Holt","alpha",0.8756200760319
+"Test","Damped Holt","beta",0.000299794666878115
+"Test","Damped Holt","phi",0.800000074584267
+"Test","Damped Holt","l",-0.114661283532833
+"Test","Damped Holt","b",-0.0360028411764056
+"Test","Holt-Winters","alpha",0.374128432235004
+"Test","Holt-Winters","beta",0.0120520438753303
+"Test","Holt-Winters","gamma",0.107735664790246
+"Test","Holt-Winters","l",-0.175160790856612
+"Test","Holt-Winters","b",0.0146720752876104
+"Test","Holt-Winters","s0",0.0116831372944169
+"Test","Holt-Winters","s1",0.0185637078471804
+"Test","Holt-Winters","s2",0.0691090947177335
+"Test","Holt-Winters","s3",0.111228336037024
+"Test","Holt-Winters","s4",0.0584190902491365
+"Test","Holt-Winters","s5",0.019421566427671
+"Test","Holt-Winters","s6",-0.168358069038174
+"Test","Holt-Winters","s7",-0.0988488388410167
+"Test","Holt-Winters","s8",-0.0395369524109161
+"Test","Holt-Winters","s9",0.0718994434620988
+"Test","Holt-Winters","s10",-0.159761364263748
+"Test","Auto ETS","alpha",0.718603257164148
+"Test","Auto ETS","gamma",0.000258945662029611
+"Test","Auto ETS","l",-0.444203779497838
+"Test","Auto ETS","s0",0.0525829565174101
+"Test","Auto ETS","s1",0.0163802433717241
+"Test","Auto ETS","s2",-0.00474920943310158
+"Test","Auto ETS","s3",0.000262939859724454
+"Test","Auto ETS","s4",-0.0261590691660882
+"Test","Auto ETS","s5",-0.0608549484137707
+"Test","Auto ETS","s6",-0.0812451553433907
+"Test","Auto ETS","s7",-0.0608150928635843
+"Test","Auto ETS","s8",0.0211253506764337
+"Test","Auto ETS","s9",0.0271554097190792
+"Test","Auto ETS","s10",0.0463278334609364
+"Test","ARIMA","ar1",-0.729010042737158
+"Test","ARIMA","ar2",0.552283512816193
+"Test","ARIMA","ar3",0.792198506115607
+"Test","ARIMA","ma1",0.580549199784999
+"Test","ARIMA","ma2",-0.648400740021179
+"Test","ARIMA","ma3",-0.829033160843944
+"Test","ARIMA","drift",0.00203924488129972
+"Test","Seasonal ARIMA search","ar1",-0.206661945343022
+"Test","Seasonal ARIMA search","sar1",0.21169035028857
+"Test","Seasonal ARIMA search","sar2",0.236488821474837
+"Final","SES","alpha",0.87851372209907
+"Final","SES","l",-0.143778347694711
+"Final","Holt","alpha",0.872452580763096
+"Final","Holt","beta",0.000100000901258903
+"Final","Holt","l",-0.150601752810987
+"Final","Holt","b",0.00230308006100491
+"Final","Damped Holt","alpha",0.878836447290114
+"Final","Damped Holt","beta",0.00010000278216018
+"Final","Damped Holt","phi",0.944586030777618
+"Final","Damped Holt","l",-0.142036450199962
+"Final","Damped Holt","b",-0.000791607487909484
+"Final","Holt-Winters","alpha",0.551424557870335
+"Final","Holt-Winters","beta",0.0099871183808744
+"Final","Holt-Winters","gamma",0.0882064387825236
+"Final","Holt-Winters","l",-0.322086068545623
+"Final","Holt-Winters","b",0.0230915488622731
+"Final","Holt-Winters","s0",0.0136404107266246
+"Final","Holt-Winters","s1",0.0206689089011028
+"Final","Holt-Winters","s2",0.0268312077215985
+"Final","Holt-Winters","s3",-0.0109199497940712
+"Final","Holt-Winters","s4",-0.0109138857989826
+"Final","Holt-Winters","s5",-0.0486475347340538
+"Final","Holt-Winters","s6",-0.134154461036425
+"Final","Holt-Winters","s7",-0.0926927208823612
+"Final","Holt-Winters","s8",-0.0270745180225945
+"Final","Holt-Winters","s9",0.127705521524514
+"Final","Holt-Winters","s10",-0.00284574523480773
+"Final","Auto ETS","alpha",0.592207957705266
+"Final","Auto ETS","gamma",0.000214790658117374
+"Final","Auto ETS","l",-0.443455549891046
+"Final","Auto ETS","s0",0.0684905419686328
+"Final","Auto ETS","s1",0.0103356755206934
+"Final","Auto ETS","s2",-0.017613862397729
+"Final","Auto ETS","s3",0.00117063685396414
+"Final","Auto ETS","s4",-0.0174936788684459
+"Final","Auto ETS","s5",-0.0628467386989617
+"Final","Auto ETS","s6",-0.0733476245166737
+"Final","Auto ETS","s7",-0.0540499168947837
+"Final","Auto ETS","s8",0.0185447843970427
+"Final","Auto ETS","s9",0.0257263013791299
+"Final","Auto ETS","s10",0.0337949944317273
+"Final","ARIMA","ar1",-0.732626203841129
+"Final","ARIMA","ar2",0.548339790781154
+"Final","ARIMA","ar3",0.794149010868184
+"Final","ARIMA","ma1",0.585856286803791
+"Final","ARIMA","ma2",-0.645408628099864
+"Final","ARIMA","ma3",-0.833015599474272
+"Final","ARIMA","drift",0.00213033450193694
+"Final","Seasonal ARIMA search","ar1",-0.204748945579347
+"Final","Seasonal ARIMA search","sar1",0.213962999429862
+"Final","Seasonal ARIMA search","sar2",0.234753488911068
